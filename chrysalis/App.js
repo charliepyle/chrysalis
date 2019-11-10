@@ -25,15 +25,6 @@ const options = {
   }
 };
 
-// realtime database config
-var Config = {
-  apiKey: "<API_KEY>",
-  authDomain: "<PROJECT_ID>.firebaseapp.com",
-  databaseURL: "https://<DATABASE_NAME>.firebaseio.com",
-  projectId: "<PROJECT_ID>",
-  storageBucket: "<BUCKET>.appspot.com",
-  messagingSenderId: "<SENDER_ID>",
-};
 
 const ImageRow = ({ image, windowWidth, popImage }) => (
   <View>
@@ -126,7 +117,7 @@ export default class App extends Component {
     this.setState({ uploading: true });
     firebase
       .storage()
-      .ref(`tutorials/images/${filename}`)
+      .ref(`images/${filename}`)
       .putFile(this.state.imageUri)
       .on(
         firebase.storage.TaskEvent.STATE_CHANGED,
@@ -156,7 +147,23 @@ export default class App extends Component {
           alert('Sorry, Try again.');
         }
       );
+    
+    
+    this.upload(filename);
   };
+  
+  upload = async (filename) => { 
+    // const ref = database().ref(`/images/${filename}`); 
+    // await ref.set({filename, filename: true}); 
+    try {
+      const ref = database().ref(`/images/123`);
+    await ref.set({filename, filename: true});
+    } catch (e) {
+      console.error(e);
+    }
+    
+  };
+
   /**
    * Remove image from the state and persistance storage
    */
