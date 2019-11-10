@@ -194,6 +194,11 @@ PODS:
   - RNFBApp (6.0.3):
     - Firebase/Core (~> 6.8.1)
     - React
+  - RNFBDatabase (6.0.3):
+    - Firebase/Core (~> 6.8.1)
+    - Firebase/Database (~> 6.8.1)
+    - React
+    - RNFBApp
   - RNFirebase (5.5.6):
     - Firebase/Core
     - React
@@ -236,6 +241,7 @@ DEPENDENCIES:
   - React-RCTWebSocket (from `../node_modules/react-native/Libraries/WebSocket`)
   - "RNCAsyncStorage (from `../node_modules/@react-native-community/async-storage`)"
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
+  - "RNFBDatabase (from `../node_modules/@react-native-firebase/database`)"
   - RNFirebase (from `../node_modules/react-native-firebase/ios`)
   - RNGoogleSignin (from `../node_modules/react-native-google-signin`)
   - yoga (from `../node_modules/react-native/ReactCommon/yoga`)
@@ -313,6 +319,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-community/async-storage"
   RNFBApp:
     :path: "../node_modules/@react-native-firebase/app"
+  RNFBDatabase:
+    :path: "../node_modules/@react-native-firebase/database"
   RNFirebase:
     :path: "../node_modules/react-native-firebase/ios"
   RNGoogleSignin:
@@ -354,7 +362,7 @@ SPEC CHECKSUMS:
   React-jsi: 4d8c9efb6312a9725b18d6fc818ffc103f60fec2
   React-jsiexecutor: 90ad2f9db09513fc763bc757fdc3c4ff8bde2a30
   React-jsinspector: e08662d1bf5b129a3d556eb9ea343a3f40353ae4
-  react-native-image-picker: 3637d63fef7e32a230141ab4660d3ceb773c824f
+  react-native-image-picker: 7a85cf7b0a53845f03ae52fb4592a2748ded069b
   React-RCTActionSheet: b0f1ea83f4bf75fb966eae9bfc47b78c8d3efd90
   React-RCTAnimation: 359ba1b5690b1e87cc173558a78e82d35919333e
   React-RCTBlob: 5e2b55f76e9a1c7ae52b826923502ddc3238df24
@@ -365,8 +373,9 @@ SPEC CHECKSUMS:
   React-RCTText: b074d89033583d4f2eb5faf7ea2db3a13c7553a2
   React-RCTVibration: 2105b2e0e2b66a6408fc69a46c8a7fb5b2fdade0
   React-RCTWebSocket: cd932a16b7214898b6b7f788c8bddb3637246ac4
-  RNCAsyncStorage: 5ae4d57458804e99f73d427214442a6b10a53856
+  RNCAsyncStorage: 60a80e72d95bf02a01cace55d3697d9724f0d77f
   RNFBApp: 92ae594c85e82e1e68434049b2a37e1f584cf8b9
+  RNFBDatabase: d7777fb4e6e312321a26f0ff5f5ef3a669bc2215
   RNFirebase: ac0de8b24c6f91ae9459575491ed6a77327619c6
   RNGoogleSignin: bb1393dec8541d997fd12b7b8f43481868a34e93
   yoga: 312528f5bbbba37b4dcea5ef00e8b4033fdd9411

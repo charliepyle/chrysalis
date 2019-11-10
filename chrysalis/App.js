@@ -13,8 +13,8 @@ import {
 import ImagePicker from 'react-native-image-picker';
 import AsyncStorage from '@react-native-community/async-storage';
 import firebase from 'react-native-firebase';
-import uuid from 'uuid/v4'; // Import UUID to generate UUID
-//import { GoogleSignin } from '@react-native-community/google-signin';
+import database from '@react-native-firebase/database';
+import uuid from 'uuid/v4';
 import { GoogleSignin } from 'react-native-google-signin';
 
 const options = {
@@ -24,6 +24,17 @@ const options = {
     path: 'images'
   }
 };
+
+// realtime database config
+var Config = {
+  apiKey: "<API_KEY>",
+  authDomain: "<PROJECT_ID>.firebaseapp.com",
+  databaseURL: "https://<DATABASE_NAME>.firebaseio.com",
+  projectId: "<PROJECT_ID>",
+  storageBucket: "<BUCKET>.appspot.com",
+  messagingSenderId: "<SENDER_ID>",
+};
+
 const ImageRow = ({ image, windowWidth, popImage }) => (
   <View>
     <Image
@@ -78,6 +89,11 @@ export default class App extends Component {
     // login with credential
     const firebaseUserCredential = await firebase.auth().signInWithCredential(credential);
     this.setState({authenticated: true});
+
+    const uid = firebase.auth().currentUser.uid;
+    const ref = database().ref(`/users/${uid}`);
+    await ref.set({uid, name: firebase.auth().currentUser.displayName});
+
     console.info(JSON.stringify(firebaseUserCredential.user.toJSON()));
   } catch (e) {
     console.error(e);
