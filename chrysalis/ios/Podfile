@@ -10,6 +10,7 @@ target 'Chrysalis' do
   # Pods for Chrysalis
   pod 'React', :path => '../node_modules/react-native/'
   pod 'React-Core', :path => '../node_modules/react-native/React'
+  rn_maps_path = '../node_modules/react-native-maps'
   pod 'React-DevSupport', :path => '../node_modules/react-native/React'
   pod 'React-RCTActionSheet', :path => '../node_modules/react-native/Libraries/ActionSheetIOS'
   pod 'React-RCTAnimation', :path => '../node_modules/react-native/Libraries/NativeAnimation'
@@ -29,6 +30,12 @@ target 'Chrysalis' do
   pod 'DoubleConversion', :podspec => '../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec'
   pod 'glog', :podspec => '../node_modules/react-native/third-party-podspecs/glog.podspec'
   pod 'Folly', :podspec => '../node_modules/react-native/third-party-podspecs/Folly.podspec'
+  #//# Firebase core dependency
+  pod 'Firebase/Core'
+  #//# Firebase storage dependency
+  pod 'Firebase/Database'
+  pod 'Firebase/Storage'
+
 
   target 'ChrysalisTests' do
     inherit! :search_paths
