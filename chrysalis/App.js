@@ -14,6 +14,8 @@ import ImagePicker from 'react-native-image-picker';
 import AsyncStorage from '@react-native-community/async-storage';
 import firebase from 'react-native-firebase';
 import uuid from 'uuid/v4'; // Import UUID to generate UUID
+//import { GoogleSignin } from '@react-native-community/google-signin';
+import { GoogleSignin } from 'react-native-google-signin';
 
 const options = {
   title: 'Select Image',
@@ -31,11 +33,17 @@ const ImageRow = ({ image, windowWidth, popImage }) => (
     />
   </View>
 );
+
+
+
+
+
 export default class App extends Component {
   state = {
     imgSource: '',
     uploading: false,
     progress: 0,
+    authenticated: false,
     images: []
   };
   componentDidMount() {
@@ -51,6 +59,30 @@ export default class App extends Component {
          console.log(error);
       });
   }
+
+  // Calling this function will open Google for login.
+  googleLogin = async () => {
+  try {
+    // Add any configuration settings here:
+    GoogleSignin.configure(
+      {
+    scopes: ['https://www.googleapis.com/auth/drive.readonly'],
+    webClientId: '303939570860-v560c7j3vmi210n1foijq5ebau9ucoq3.apps.googleusercontent.com', // required
+    }
+    );
+
+    const data = await GoogleSignin.signIn();
+
+    // create a new firebase credential with the token
+    const credential = firebase.auth.GoogleAuthProvider.credential(data.idToken, data.accessToken)
+    // login with credential
+    const firebaseUserCredential = await firebase.auth().signInWithCredential(credential);
+    this.setState({authenticated: true});
+    console.info(JSON.stringify(firebaseUserCredential.user.toJSON()));
+  } catch (e) {
+    console.error(e);
+  }
+}
   /**
    * Select image method
    */
@@ -119,77 +151,94 @@ export default class App extends Component {
     AsyncStorage.setItem('images', JSON.stringify(images));
   };
   render() {
-    const { uploading, imgSource, progress, images } = this.state;
+    const { uploading, imgSource, progress, authenticated, images } = this.state;
     const windowWidth = Dimensions.get('window').width;
     const disabledStyle = uploading ? styles.disabledBtn : {};
     const actionBtnStyles = [styles.btn, disabledStyle];
     // AsyncStorage.clear();
     return (
       <View>
+       {authenticated ? 
         <ScrollView>
-          <View style={styles.container}>
-            <TouchableOpacity
-              style={actionBtnStyles}
-              onPress={this.pickImage}
-              disabled={uploading}
-            >
-              <View>
-                <Text style={styles.btnTxt}>Pick image</Text>
-              </View>
-            </TouchableOpacity>
-            {/** Display selected image */}
-            {imgSource !== '' && (
-              <View>
-                <Image source={imgSource} style={styles.image} />
-                {uploading && (
-                  <View
-                    style={[styles.progressBar, { width: `${progress}%` }]}
-                  />
-                )}
-                <TouchableOpacity
-                  style={actionBtnStyles}
-                  onPress={this.uploadImage}
-                  disabled={uploading}
-                >
-                  <View>
-                    {uploading ? (
-                      <Text style={styles.btnTxt}>Uploading ...</Text>
-                    ) : (
-                      <Text style={styles.btnTxt}>Upload image</Text>
-                    )}
-                  </View>
-                </TouchableOpacity>
-              </View>
-            )}
-
+        <View style={styles.container}>
+          <TouchableOpacity
+            style={actionBtnStyles}
+            onPress={this.pickImage}
+            disabled={uploading}
+          >
             <View>
-              <Text
-                style={{
-                  fontWeight: '600',
-                  paddingTop: 20,
-                  alignSelf: 'center'
-                }}
-              >
-                {images.length > 0
-                  ? 'Your uploaded images'
-                  : 'There is no image you uploaded'}
-              </Text>
+              <Text style={styles.btnTxt}>Pick image</Text>
             </View>
-            <FlatList
-              numColumns={2}
-              style={{ marginTop: 20 }}
-              data={images}
-              renderItem={({ item: image, index }) => (
-                <ImageRow
-                  windowWidth={windowWidth}
-                  image={image}
-                  popImage={() => this.removeImage(index)}
+          </TouchableOpacity>
+          {/** Display selected image */}
+          {imgSource !== '' && (
+            <View>
+              <Image source={imgSource} style={styles.image} />
+              {uploading && (
+                <View
+                  style={[styles.progressBar, { width: `${progress}%` }]}
                 />
               )}
-              keyExtractor={index => index}
-            />
+              <TouchableOpacity
+                style={actionBtnStyles}
+                onPress={this.uploadImage}
+                disabled={uploading}
+              >
+                <View>
+                  {uploading ? (
+                    <Text style={styles.btnTxt}>Uploading ...</Text>
+                  ) : (
+                    <Text style={styles.btnTxt}>Upload image</Text>
+                  )}
+                </View>
+              </TouchableOpacity>
+            </View>
+          )}
+
+          <View>
+            <Text
+              style={{
+                fontWeight: '600',
+                paddingTop: 20,
+                alignSelf: 'center'
+              }}
+            >
+              {images.length > 0
+                ? 'Your uploaded images'
+                : 'There is no image you uploaded'}
+            </Text>
           </View>
-        </ScrollView>
+          <FlatList
+            numColumns={2}
+            style={{ marginTop: 20 }}
+            data={images}
+            renderItem={({ item: image, index }) => (
+              <ImageRow
+                windowWidth={windowWidth}
+                image={image}
+                popImage={() => this.removeImage(index)}
+              />
+            )}
+            keyExtractor={index => index}
+          />
+        </View>
+      </ScrollView>
+        : 
+        <TouchableOpacity
+                style={styles.googlebtn}
+                onPress={this.googleLogin}
+              >
+                <View>
+                  {this.state.authentication ? (
+                    <Text style={styles.btnTxt}>Logged in ...</Text>
+                  ) : (
+                    <Text style={styles.btnTxt}>Not logged in!</Text>
+                  )}
+                </View>
+        </TouchableOpacity>
+
+       }
+        
       </View>
     );
   }
@@ -212,6 +261,16 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     backgroundColor: 'rgb(3, 154, 229)',
     marginTop: 20,
+    alignItems: 'center'
+  },
+  googlebtn: {
+    paddingLeft: 20,
+    paddingRight: 20,
+    paddingTop: 10,
+    paddingBottom: 10,
+    borderRadius: 20,
+    backgroundColor: 'rgb(3, 154, 134)',
+    marginTop: 400,
     alignItems: 'center'
   },
   disabledBtn: {
@@ -242,7 +301,6 @@ const styles = StyleSheet.create({
     shadowColor: '#000',
   }
 });
-
 
 
 

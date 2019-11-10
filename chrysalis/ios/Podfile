@@ -35,6 +35,7 @@ target 'Chrysalis' do
   #//# Firebase storage dependency
   pod 'Firebase/Database'
   pod 'Firebase/Storage'
+  pod 'Firebase/Auth'
 
 
   target 'ChrysalisTests' do
