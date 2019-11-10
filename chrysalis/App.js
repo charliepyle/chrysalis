@@ -40,7 +40,6 @@ export default class App extends Component {
   };
   componentDidMount() {
     let images;
-    alert('did mount');
     AsyncStorage.getItem('images')
       .then(data => {
         images = JSON.parse(data) || [];
@@ -56,12 +55,11 @@ export default class App extends Component {
    * Select image method
    */
   pickImage = () => {
-    alert('will break!');
     ImagePicker.showImagePicker(options, response => {
       if (response.didCancel) {
-        alert('You cancelled image picker 😟');
+        console.log('You cancelled image picker 😟');
       } else if (response.error) {
-        alert('And error occured: ', response.error);
+        alert('An error occured: ', response.error);
       } else {
         const source = { uri: response.uri };
         this.setState({
@@ -75,9 +73,8 @@ export default class App extends Component {
    * Upload image method
    */
   uploadImage = () => {
-    //const ext = this.state.imageUri.split('.').pop(); // Extract image extension
-    const filename = 'fasdfkjhasdf';
-    //const filename = `${uuid()}.${ext}`; // Generate unique name
+    const ext = this.state.imageUri.split('.').pop(); // Extract image extension
+    const filename = `${uuid()}.${ext}`; // Generate unique name
     this.setState({ uploading: true });
     firebase
       .storage()
