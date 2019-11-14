@@ -20,6 +20,8 @@ import {createAppContainer} from 'react-navigation';
 import {createStackNavigator} from 'react-navigation-stack';
 import HomeScreen from './views/HomeScreen';
 import LoginScreen from './views/LoginScreen';
+import Firebase, {FirebaseProvider} from './config/Firebase';
+import AppContainer from './navigation';
 
 const options = {
   title: 'Select Image',
@@ -271,29 +273,33 @@ const ImageRow = ({ image, windowWidth, popImage }) => (
 //   }
 // }
 
-const MainNavigator = createStackNavigator(
-  //screens
-  {
-    Login: {screen: LoginScreen},
-    Home: {screen: HomeScreen},
-  },
-  {
-    initialRouteName: 'Login',
-    defaultNavigationOptions: {
-      headerStyle: {
-        //backgroundColor: '#fff',
-      },
-      //headerTintColor: '#fff',
-      headerTitleStyle: {
-        fontWeight: 'bold',
-      },
-    },
-  }
-);
+// const MainNavigator = createStackNavigator(
+//   //screens
+//   {
+//     Login: {screen: LoginScreen},
+//     Home: {screen: HomeScreen},
+//   },
+//   {
+//     initialRouteName: 'Login',
+//     defaultNavigationOptions: {
+//       headerStyle: {
+//         //backgroundColor: '#fff',
+//       },
+//       //headerTintColor: '#fff',
+//       headerTitleStyle: {
+//         fontWeight: 'bold',
+//       },
+//     },
+//   }
+// );
 
-const App = createAppContainer(MainNavigator);
-
-export default App;
+export default function App() {
+  return (
+    <FirebaseProvider value={Firebase}>
+      <AppContainer />
+    </FirebaseProvider>
+  );
+}
 
 const styles = StyleSheet.create({
   container: {
