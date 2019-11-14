@@ -16,6 +16,10 @@ import firebase from 'react-native-firebase';
 import database from '@react-native-firebase/database';
 import uuid from 'uuid/v4';
 import { GoogleSignin } from 'react-native-google-signin';
+import {createAppContainer} from 'react-navigation';
+import {createStackNavigator} from 'react-navigation-stack';
+import HomeScreen from './views/HomeScreen';
+import LoginScreen from './views/LoginScreen';
 
 const options = {
   title: 'Select Image',
@@ -40,232 +44,256 @@ const ImageRow = ({ image, windowWidth, popImage }) => (
 
 
 
-export default class App extends Component {
-  state = {
-    imgSource: '',
-    uploading: false,
-    progress: 0,
-    authenticated: false,
-    images: []
-  };
-  componentDidMount() {
-    let images;
-    AsyncStorage.getItem('images')
-      .then(data => {
-        images = JSON.parse(data) || [];
-        this.setState({
-          images: images
-        });
-      })
-      .catch(error => {
-         console.log(error);
-      });
-  }
+// export default class App extends Component {
+//   state = {
+//     imgSource: '',
+//     uploading: false,
+//     progress: 0,
+//     authenticated: false,
+//     images: []
+//   };
+//   componentDidMount() {
+//     let images;
+//     AsyncStorage.getItem('images')
+//       .then(data => {
+//         images = JSON.parse(data) || [];
+//         this.setState({
+//           images: images
+//         });
+//       })
+//       .catch(error => {
+//          console.log(error);
+//       });
+//   }
 
-  // Calling this function will open Google for login.
-  googleLogin = async () => {
-  try {
-    // Add any configuration settings here:
-    GoogleSignin.configure(
-      {
-    scopes: ['https://www.googleapis.com/auth/drive.readonly'],
-    webClientId: '303939570860-v560c7j3vmi210n1foijq5ebau9ucoq3.apps.googleusercontent.com', // required
-    }
-    );
+//   // Calling this function will open Google for login.
+//   googleLogin = async () => {
+//   try {
+//     // Add any configuration settings here:
+//     GoogleSignin.configure(
+//       {
+//     scopes: ['https://www.googleapis.com/auth/drive.readonly'],
+//     webClientId: '303939570860-v560c7j3vmi210n1foijq5ebau9ucoq3.apps.googleusercontent.com', // required
+//     }
+//     );
 
-    const data = await GoogleSignin.signIn();
+//     const data = await GoogleSignin.signIn();
 
-    // create a new firebase credential with the token
-    const credential = firebase.auth.GoogleAuthProvider.credential(data.idToken, data.accessToken)
-    // login with credential
-    const firebaseUserCredential = await firebase.auth().signInWithCredential(credential);
-    this.setState({authenticated: true});
+//     // create a new firebase credential with the token
+//     const credential = firebase.auth.GoogleAuthProvider.credential(data.idToken, data.accessToken)
+//     // login with credential
+//     const firebaseUserCredential = await firebase.auth().signInWithCredential(credential);
+//     this.setState({authenticated: true});
 
-    const uid = firebase.auth().currentUser.uid;
-    const ref = database().ref(`/users/${uid}`);
-    await ref.set({uid, name: firebase.auth().currentUser.displayName});
+//     const uid = firebase.auth().currentUser.uid;
+//     const ref = database().ref(`/users/${uid}`);
+//     await ref.set({uid, name: firebase.auth().currentUser.displayName});
 
-    console.info(JSON.stringify(firebaseUserCredential.user.toJSON()));
-  } catch (e) {
-    console.error(e);
-  }
-}
-  /**
-   * Select image method
-   */
-  pickImage = () => {
-    ImagePicker.showImagePicker(options, response => {
-      if (response.didCancel) {
-        console.log('You cancelled image picker 😟');
-      } else if (response.error) {
-        alert('An error occured: ', response.error);
-      } else {
-        const source = { uri: response.uri };
-        this.setState({
-          imgSource: source,
-          imageUri: response.uri
-        });
-      }
-    });
-  };
-  /**
-   * Upload image method
-   */
-  uploadImage = () => {
-    const ext = this.state.imageUri.split('.').pop(); // Extract image extension
-    const filename = `${uuid()}.${ext}`; // Generate unique name
-    this.setState({ uploading: true });
-    firebase
-      .storage()
-      .ref(`images/${filename}`)
-      .putFile(this.state.imageUri)
-      .on(
-        firebase.storage.TaskEvent.STATE_CHANGED,
-        snapshot => {
-          let state = {};
-          state = {
-            ...state,
-            progress: (snapshot.bytesTransferred / snapshot.totalBytes) * 100 // Calculate progress percentage
-          };
-          if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
-            const allImages = this.state.images;
-            allImages.push(snapshot.downloadURL);
-            state = {
-              ...state,
-              uploading: false,
-              imgSource: '',
-              imageUri: '',
-              progress: 0,
-              images: allImages
-            };
-            AsyncStorage.setItem('images', JSON.stringify(allImages));
-          }
-          this.setState(state);
-        },
-        error => {
-          unsubscribe();
-          alert('Sorry, Try again.');
-        }
-      );
+//     console.info(JSON.stringify(firebaseUserCredential.user.toJSON()));
+//   } catch (e) {
+//     console.error(e);
+//   }
+// }
+//   /**
+//    * Select image method
+//    */
+//   pickImage = () => {
+//     ImagePicker.showImagePicker(options, response => {
+//       if (response.didCancel) {
+//         console.log('You cancelled image picker 😟');
+//       } else if (response.error) {
+//         alert('An error occured: ', response.error);
+//       } else {
+//         const source = { uri: response.uri };
+//         this.setState({
+//           imgSource: source,
+//           imageUri: response.uri
+//         });
+//       }
+//     });
+//   };
+//   /**
+//    * Upload image method
+//    */
+//   uploadImage = () => {
+//     const ext = this.state.imageUri.split('.').pop(); // Extract image extension
+//     const filename = `${uuid()}.${ext}`; // Generate unique name
+//     this.setState({ uploading: true });
+//     firebase
+//       .storage()
+//       .ref(`images/${filename}`)
+//       .putFile(this.state.imageUri)
+//       .on(
+//         firebase.storage.TaskEvent.STATE_CHANGED,
+//         snapshot => {
+//           let state = {};
+//           state = {
+//             ...state,
+//             progress: (snapshot.bytesTransferred / snapshot.totalBytes) * 100 // Calculate progress percentage
+//           };
+//           if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
+//             const allImages = this.state.images;
+//             allImages.push(snapshot.downloadURL);
+//             state = {
+//               ...state,
+//               uploading: false,
+//               imgSource: '',
+//               imageUri: '',
+//               progress: 0,
+//               images: allImages
+//             };
+//             AsyncStorage.setItem('images', JSON.stringify(allImages));
+//           }
+//           this.setState(state);
+//         },
+//         error => {
+//           unsubscribe();
+//           alert('Sorry, Try again.');
+//         }
+//       );
     
     
-    this.upload(filename);
-  };
+//     this.upload(filename);
+//   };
   
-  upload = async (filename) => { 
-    // const ref = database().ref(`/images/${filename}`); 
-    // await ref.set({filename, filename: true}); 
-    try {
-      const ref = database().ref(`/images/123`);
-    await ref.set({filename, filename: true});
-    } catch (e) {
-      console.error(e);
-    }
+//   upload = async (filename) => { 
+//     // const ref = database().ref(`/images/${filename}`); 
+//     // await ref.set({filename, filename: true}); 
+//     try {
+//       const ref = database().ref(`/images/123`);
+//     await ref.set({filename, filename: true});
+//     } catch (e) {
+//       console.error(e);
+//     }
     
-  };
+//   };
 
-  /**
-   * Remove image from the state and persistance storage
-   */
-  removeImage = imageIndex => {
-    let images = this.state.images;
-    images.pop(imageIndex);
-    this.setState({ images });
-    AsyncStorage.setItem('images', JSON.stringify(images));
-  };
-  render() {
-    const { uploading, imgSource, progress, authenticated, images } = this.state;
-    const windowWidth = Dimensions.get('window').width;
-    const disabledStyle = uploading ? styles.disabledBtn : {};
-    const actionBtnStyles = [styles.btn, disabledStyle];
-    // AsyncStorage.clear();
-    return (
-      <View>
-       {authenticated ? 
-        <ScrollView>
-        <View style={styles.container}>
-          <TouchableOpacity
-            style={actionBtnStyles}
-            onPress={this.pickImage}
-            disabled={uploading}
-          >
-            <View>
-              <Text style={styles.btnTxt}>Pick image</Text>
-            </View>
-          </TouchableOpacity>
-          {/** Display selected image */}
-          {imgSource !== '' && (
-            <View>
-              <Image source={imgSource} style={styles.image} />
-              {uploading && (
-                <View
-                  style={[styles.progressBar, { width: `${progress}%` }]}
-                />
-              )}
-              <TouchableOpacity
-                style={actionBtnStyles}
-                onPress={this.uploadImage}
-                disabled={uploading}
-              >
-                <View>
-                  {uploading ? (
-                    <Text style={styles.btnTxt}>Uploading ...</Text>
-                  ) : (
-                    <Text style={styles.btnTxt}>Upload image</Text>
-                  )}
-                </View>
-              </TouchableOpacity>
-            </View>
-          )}
+//   /**
+//    * Remove image from the state and persistance storage
+//    */
+//   removeImage = imageIndex => {
+//     let images = this.state.images;
+//     images.pop(imageIndex);
+//     this.setState({ images });
+//     AsyncStorage.setItem('images', JSON.stringify(images));
+//   };
+//   render() {
+//     const { uploading, imgSource, progress, authenticated, images } = this.state;
+//     const windowWidth = Dimensions.get('window').width;
+//     const disabledStyle = uploading ? styles.disabledBtn : {};
+//     const actionBtnStyles = [styles.btn, disabledStyle];
+//     // AsyncStorage.clear();
+//     return (
+//       <View>
+//        {authenticated ? 
+//         <ScrollView>
+//         <View style={styles.container}>
+//           <TouchableOpacity
+//             style={actionBtnStyles}
+//             onPress={this.pickImage}
+//             disabled={uploading}
+//           >
+//             <View>
+//               <Text style={styles.btnTxt}>Pick image</Text>
+//             </View>
+//           </TouchableOpacity>
+//           {/** Display selected image */}
+//           {imgSource !== '' && (
+//             <View>
+//               <Image source={imgSource} style={styles.image} />
+//               {uploading && (
+//                 <View
+//                   style={[styles.progressBar, { width: `${progress}%` }]}
+//                 />
+//               )}
+//               <TouchableOpacity
+//                 style={actionBtnStyles}
+//                 onPress={this.uploadImage}
+//                 disabled={uploading}
+//               >
+//                 <View>
+//                   {uploading ? (
+//                     <Text style={styles.btnTxt}>Uploading ...</Text>
+//                   ) : (
+//                     <Text style={styles.btnTxt}>Upload image</Text>
+//                   )}
+//                 </View>
+//               </TouchableOpacity>
+//             </View>
+//           )}
 
-          <View>
-            <Text
-              style={{
-                fontWeight: '600',
-                paddingTop: 20,
-                alignSelf: 'center'
-              }}
-            >
-              {images.length > 0
-                ? 'Your uploaded images'
-                : 'There is no image you uploaded'}
-            </Text>
-          </View>
-          <FlatList
-            numColumns={2}
-            style={{ marginTop: 20 }}
-            data={images}
-            renderItem={({ item: image, index }) => (
-              <ImageRow
-                windowWidth={windowWidth}
-                image={image}
-                popImage={() => this.removeImage(index)}
-              />
-            )}
-            keyExtractor={index => index}
-          />
-        </View>
-      </ScrollView>
-        : 
-        <TouchableOpacity
-                style={styles.googlebtn}
-                onPress={this.googleLogin}
-              >
-                <View>
-                  {this.state.authentication ? (
-                    <Text style={styles.btnTxt}>Logged in ...</Text>
-                  ) : (
-                    <Text style={styles.btnTxt}>Not logged in!</Text>
-                  )}
-                </View>
-        </TouchableOpacity>
+//           <View>
+//             <Text
+//               style={{
+//                 fontWeight: '600',
+//                 paddingTop: 20,
+//                 alignSelf: 'center'
+//               }}
+//             >
+//               {images.length > 0
+//                 ? 'Your uploaded images'
+//                 : 'There is no image you uploaded'}
+//             </Text>
+//           </View>
+//           <FlatList
+//             numColumns={2}
+//             style={{ marginTop: 20 }}
+//             data={images}
+//             renderItem={({ item: image, index }) => (
+//               <ImageRow
+//                 windowWidth={windowWidth}
+//                 image={image}
+//                 popImage={() => this.removeImage(index)}
+//               />
+//             )}
+//             keyExtractor={index => index}
+//           />
+//         </View>
+//       </ScrollView>
+//         : 
+//         <TouchableOpacity
+//                 style={styles.googlebtn}
+//                 onPress={this.googleLogin}
+//               >
+//                 <View>
+//                   {this.state.authentication ? (
+//                     <Text style={styles.btnTxt}>Logged in ...</Text>
+//                   ) : (
+//                     <Text style={styles.btnTxt}>Not logged in!</Text>
+//                   )}
+//                 </View>
+//         </TouchableOpacity>
 
-       }
+//        }
         
-      </View>
-    );
+//       </View>
+//     );
+//   }
+// }
+
+const MainNavigator = createStackNavigator(
+  //screens
+  {
+    Login: {screen: LoginScreen},
+    Home: {screen: HomeScreen},
+  },
+  {
+    initialRouteName: 'Login',
+    defaultNavigationOptions: {
+      headerStyle: {
+        //backgroundColor: '#fff',
+      },
+      //headerTintColor: '#fff',
+      headerTitleStyle: {
+        fontWeight: 'bold',
+      },
+    },
   }
-}
+);
+
+const App = createAppContainer(MainNavigator);
+
+export default App;
 
 const styles = StyleSheet.create({
   container: {

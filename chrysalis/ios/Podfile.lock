@@ -83,7 +83,7 @@ PODS:
   - GoogleDataTransportCCTSupport (1.2.1):
     - GoogleDataTransport (~> 3.0)
     - nanopb (~> 0.3.901)
-  - GoogleSignIn (5.0.1):
+  - GoogleSignIn (5.0.2):
     - AppAuth (~> 1.2)
     - GTMAppAuth (~> 1.0)
     - GTMSessionFetcher/Core (~> 1.1)
@@ -208,6 +208,8 @@ PODS:
     - Fabric
     - Firebase/Core
     - React
+  - RNGestureHandler (1.5.0):
+    - React
   - RNGoogleSignin (2.1.0):
     - GoogleSignIn (~> 5.0.0)
     - React
@@ -243,6 +245,7 @@ DEPENDENCIES:
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
   - "RNFBDatabase (from `../node_modules/@react-native-firebase/database`)"
   - RNFirebase (from `../node_modules/react-native-firebase/ios`)
+  - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNGoogleSignin (from `../node_modules/react-native-google-signin`)
   - yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
@@ -323,6 +326,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-firebase/database"
   RNFirebase:
     :path: "../node_modules/react-native-firebase/ios"
+  RNGestureHandler:
+    :path: "../node_modules/react-native-gesture-handler"
   RNGoogleSignin:
     :path: "../node_modules/react-native-google-signin"
   yoga:
@@ -349,7 +354,7 @@ SPEC CHECKSUMS:
   GoogleAppMeasurement: 86a82f0e1f20b8eedf8e20326530138fd71409de
   GoogleDataTransport: 166f9b9f82cbf60a204e8fe2daa9db3e3ec1fb15
   GoogleDataTransportCCTSupport: f6ab1962e9dc05ab1fb938b795e5b310209edeec
-  GoogleSignIn: 3a51b9bb8e48b635fd7f4272cee06ca260345b86
+  GoogleSignIn: 7137d297ddc022a7e0aa4619c86d72c909fa7213
   GoogleUtilities: f895fde57977df4e0233edda0dbeac490e3703b6
   GTMAppAuth: 4deac854479704f348309e7b66189e604cf5e01e
   GTMSessionFetcher: 43b8b64263023d4f32caa0b40f4c8bfa3c5f36d8
@@ -362,7 +367,7 @@ SPEC CHECKSUMS:
   React-jsi: 4d8c9efb6312a9725b18d6fc818ffc103f60fec2
   React-jsiexecutor: 90ad2f9db09513fc763bc757fdc3c4ff8bde2a30
   React-jsinspector: e08662d1bf5b129a3d556eb9ea343a3f40353ae4
-  react-native-image-picker: 7a85cf7b0a53845f03ae52fb4592a2748ded069b
+  react-native-image-picker: 3637d63fef7e32a230141ab4660d3ceb773c824f
   React-RCTActionSheet: b0f1ea83f4bf75fb966eae9bfc47b78c8d3efd90
   React-RCTAnimation: 359ba1b5690b1e87cc173558a78e82d35919333e
   React-RCTBlob: 5e2b55f76e9a1c7ae52b826923502ddc3238df24
@@ -373,10 +378,11 @@ SPEC CHECKSUMS:
   React-RCTText: b074d89033583d4f2eb5faf7ea2db3a13c7553a2
   React-RCTVibration: 2105b2e0e2b66a6408fc69a46c8a7fb5b2fdade0
   React-RCTWebSocket: cd932a16b7214898b6b7f788c8bddb3637246ac4
-  RNCAsyncStorage: 60a80e72d95bf02a01cace55d3697d9724f0d77f
+  RNCAsyncStorage: 5ae4d57458804e99f73d427214442a6b10a53856
   RNFBApp: 92ae594c85e82e1e68434049b2a37e1f584cf8b9
   RNFBDatabase: d7777fb4e6e312321a26f0ff5f5ef3a669bc2215
   RNFirebase: ac0de8b24c6f91ae9459575491ed6a77327619c6
+  RNGestureHandler: a4ddde1ffc6e590c8127b8b7eabfdade45475c74
   RNGoogleSignin: bb1393dec8541d997fd12b7b8f43481868a34e93
   yoga: 312528f5bbbba37b4dcea5ef00e8b4033fdd9411
 
