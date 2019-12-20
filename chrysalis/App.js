@@ -46,6 +46,81 @@ const ImageRow = ({ image, windowWidth, popImage }) => (
 
 
 
+// firebase provider is a global container around the app to provide global vars
+// app container is pulled from the navigation folder, that folder first looks 
+// at index.js. check there for further detail.
+export default function App() {
+  return (
+    <FirebaseProvider value={Firebase}>
+      <AppContainer />
+    </FirebaseProvider>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    flexDirection: 'column',
+    backgroundColor: '#ffffff',
+    marginTop: 20,
+    paddingLeft: 5,
+    paddingRight: 5
+  },
+  btn: {
+    paddingLeft: 20,
+    paddingRight: 20,
+    paddingTop: 10,
+    paddingBottom: 10,
+    borderRadius: 20,
+    backgroundColor: 'rgb(3, 154, 229)',
+    marginTop: 20,
+    alignItems: 'center'
+  },
+  googlebtn: {
+    paddingLeft: 20,
+    paddingRight: 20,
+    paddingTop: 10,
+    paddingBottom: 10,
+    borderRadius: 20,
+    backgroundColor: 'rgb(3, 154, 134)',
+    marginTop: 400,
+    alignItems: 'center'
+  },
+  disabledBtn: {
+    backgroundColor: 'rgba(3,155,229,0.5)'
+  },
+  btnTxt: {
+    color: '#fff'
+  },
+  image: {
+    marginTop: 20,
+    minWidth: 200,
+    height: 200,
+    resizeMode: 'contain',
+    backgroundColor: '#ccc',
+  },
+  img: {
+    flex: 1,
+    height: 100,
+    margin: 5,
+    resizeMode: 'contain',
+    borderWidth: 1,
+    borderColor: '#eee',
+    backgroundColor: '#ccc'
+  },
+  progressBar: {
+    backgroundColor: 'rgb(3, 154, 229)',
+    height: 3,
+    shadowColor: '#000',
+  }
+});
+
+
+
+
+
+
+
 // export default class App extends Component {
 //   state = {
 //     imgSource: '',
@@ -292,79 +367,6 @@ const ImageRow = ({ image, windowWidth, popImage }) => (
 //     },
 //   }
 // );
-
-export default function App() {
-  return (
-    <FirebaseProvider value={Firebase}>
-      <AppContainer />
-    </FirebaseProvider>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: 'column',
-    backgroundColor: '#ffffff',
-    marginTop: 20,
-    paddingLeft: 5,
-    paddingRight: 5
-  },
-  btn: {
-    paddingLeft: 20,
-    paddingRight: 20,
-    paddingTop: 10,
-    paddingBottom: 10,
-    borderRadius: 20,
-    backgroundColor: 'rgb(3, 154, 229)',
-    marginTop: 20,
-    alignItems: 'center'
-  },
-  googlebtn: {
-    paddingLeft: 20,
-    paddingRight: 20,
-    paddingTop: 10,
-    paddingBottom: 10,
-    borderRadius: 20,
-    backgroundColor: 'rgb(3, 154, 134)',
-    marginTop: 400,
-    alignItems: 'center'
-  },
-  disabledBtn: {
-    backgroundColor: 'rgba(3,155,229,0.5)'
-  },
-  btnTxt: {
-    color: '#fff'
-  },
-  image: {
-    marginTop: 20,
-    minWidth: 200,
-    height: 200,
-    resizeMode: 'contain',
-    backgroundColor: '#ccc',
-  },
-  img: {
-    flex: 1,
-    height: 100,
-    margin: 5,
-    resizeMode: 'contain',
-    borderWidth: 1,
-    borderColor: '#eee',
-    backgroundColor: '#ccc'
-  },
-  progressBar: {
-    backgroundColor: 'rgb(3, 154, 229)',
-    height: 3,
-    shadowColor: '#000',
-  }
-});
-
-
-
-
-
-
-
 
 
 

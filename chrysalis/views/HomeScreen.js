@@ -7,82 +7,98 @@ import {
     Image,
     FlatList,
     Dimensions,
-    ScrollView
+    ScrollView,
+    Button
   } from 'react-native';
+  import ImagePicker from 'react-native-image-picker';
+
+  const options = {
+    path: 'images'
+  }	 
+
+  handleSignout = async () => {
+    try {
+
+      await this.props.firebase.signOut()   
+      this.props.navigation.navigate('Auth')
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   /**
    * Select image method
    */
-  // pickImage = () => {
-  //   ImagePicker.showImagePicker(options, response => {
-  //     if (response.didCancel) {
-  //       console.log('You cancelled image picker 😟');
-  //     } else if (response.error) {
-  //       alert('An error occured: ', response.error);
-  //     } else {
-  //       const source = { uri: response.uri };
-  //       this.setState({
-  //         imgSource: source,
-  //         imageUri: response.uri
-  //       });
-  //     }
-  //   });
-  // };
-  // /**
-  //  * Upload image method
-  //  */
-  // uploadImage = () => {
-  //   const ext = this.state.imageUri.split('.').pop(); // Extract image extension
-  //   const filename = `${uuid()}.${ext}`; // Generate unique name
-  //   this.setState({ uploading: true });
-  //   firebase
-  //     .storage()
-  //     .ref(`images/${filename}`)
-  //     .putFile(this.state.imageUri)
-  //     .on(
-  //       firebase.storage.TaskEvent.STATE_CHANGED,
-  //       snapshot => {
-  //         let state = {};
-  //         state = {
-  //           ...state,
-  //           progress: (snapshot.bytesTransferred / snapshot.totalBytes) * 100 // Calculate progress percentage
-  //         };
-  //         if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
-  //           const allImages = this.state.images;
-  //           allImages.push(snapshot.downloadURL);
-  //           state = {
-  //             ...state,
-  //             uploading: false,
-  //             imgSource: '',
-  //             imageUri: '',
-  //             progress: 0,
-  //             images: allImages
-  //           };
-  //           AsyncStorage.setItem('images', JSON.stringify(allImages));
-  //         }
-  //         this.setState(state);
-  //       },
-  //       error => {
-  //         unsubscribe();
-  //         alert('Sorry, Try again.');
-  //       }
-  //     );
+  pickImage = () => {
+    ImagePicker.showImagePicker(options, response => {
+      if (response.didCancel) {
+        console.log('You cancelled image picker 😟');
+      } else if (response.error) {
+        alert('An error occured: ', response.error);
+      } else {
+        const source = { uri: response.uri };
+        this.setState({
+          imgSource: source,
+          imageUri: response.uri
+        });
+      }
+    });
+  };
+  /**
+   * Upload image method
+   */
+  uploadImage = () => {
+    const ext = this.state.imageUri.split('.').pop(); // Extract image extension
+    const filename = `${uuid()}.${ext}`; // Generate unique name
+    this.setState({ uploading: true });
+    firebase
+      .storage()
+      .ref(`images/${filename}`)
+      .putFile(this.state.imageUri)
+      .on(
+        firebase.storage.TaskEvent.STATE_CHANGED,
+        snapshot => {
+          let state = {};
+          state = {
+            ...state,
+            progress: (snapshot.bytesTransferred / snapshot.totalBytes) * 100 // Calculate progress percentage
+          };
+          if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
+            const allImages = this.state.images;
+            allImages.push(snapshot.downloadURL);
+            state = {
+              ...state,
+              uploading: false,
+              imgSource: '',
+              imageUri: '',
+              progress: 0,
+              images: allImages
+            };
+            AsyncStorage.setItem('images', JSON.stringify(allImages));
+          }
+          this.setState(state);
+        },
+        error => {
+          unsubscribe();
+          alert('Sorry, Try again.');
+        }
+      );
     
     
-  //   this.upload(filename);
-  // };
+    this.upload(filename);
+  };
   
-  // upload = async (filename) => { 
-  //   // const ref = database().ref(`/images/${filename}`); 
-  //   // await ref.set({filename, filename: true}); 
-  //   try {
-  //     const ref = database().ref(`/images/123`);
-  //   await ref.set({filename, filename: true});
-  //   } catch (e) {
-  //     console.error(e);
-  //   }
+  upload = async (filename) => { 
+    // const ref = database().ref(`/images/${filename}`); 
+    // await ref.set({filename, filename: true}); 
+    try {
+      const ref = database().ref(`/images/123`);
+    await ref.set({filename, filename: true});
+    } catch (e) {
+      console.error(e);
+    }
     
-  // };
+  };
 
 function HomeScreen({navigation}) {
     const [uploading, setUploading] = useState(0);
@@ -90,7 +106,7 @@ function HomeScreen({navigation}) {
     const [progress, setProgress] = useState(0);
     const [images, setImages] = useState([]);
     
-    const { authenticated } = this.state;
+    const { authenticated } = useState(0);
     const windowWidth = Dimensions.get('window').width;
     const disabledStyle = uploading ? styles.disabledBtn : {};
     const actionBtnStyles = [styles.btn, disabledStyle];
@@ -161,6 +177,14 @@ function HomeScreen({navigation}) {
           />
         </View>
       </ScrollView>
+      <Button
+          title='Signout'
+          onPress={this.handleSignout}
+          titleStyle={{
+            color: '#F57C00'
+          }}
+          type='clear'
+        />
       </View>);
 }
 
@@ -178,7 +202,9 @@ const styles = StyleSheet.create({
       backgroundColor: '#ffffff',
       marginTop: 20,
       paddingLeft: 5,
-      paddingRight: 5
+      paddingRight: 5,
+      alignItems: 'center',
+    justifyContent: 'center'
     },
     btn: {
       paddingLeft: 20,

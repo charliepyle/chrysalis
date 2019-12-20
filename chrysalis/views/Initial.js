@@ -6,6 +6,7 @@ import React, { Component } from 'react'
 import { withFirebaseHOC } from '../config/Firebase'
 import {View } from 'react-native';
 
+// could probably be optimized by converting to a functional component
 class Initial extends Component {
   state = {
     isAssetsLoadingComplete: false
@@ -15,7 +16,8 @@ class Initial extends Component {
     try {
       // previously
     //   this.loadLocalAsync()
-
+      
+    // using firebase in props available as it's been passed down.
       await this.props.firebase.checkUserAuth(user => {
         if (user) {
           // if the user has previously logged in
@@ -30,6 +32,8 @@ class Initial extends Component {
     }
   }
 
+
+// commented all of this out below because I ran into problems with Ionicons
 //   loadLocalAsync = async () => {
 //     return await Promise.all([
 //       Asset.loadAsync([

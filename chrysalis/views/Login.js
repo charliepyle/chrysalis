@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react'
-import { StyleSheet, SafeAreaView, View, TouchableOpacity } from 'react-native'
+import { StyleSheet, SafeAreaView, View, Text, TouchableOpacity } from 'react-native'
 import { Button } from 'react-native-elements'
 import { Ionicons } from 'react-native-ionicons'
 import { Formik } from 'formik'
@@ -10,6 +10,8 @@ import FormButton from '../components/FormButton'
 import ErrorMessage from '../components/ErrorMessage'
 import AppLogo from '../components/AppLogo'
 import { withFirebaseHOC } from '../config/Firebase'
+import GoogleLogin from '../modules/utils/GoogleLogin'
+//import LoginScreen from './LoginScreen'
 
 const validationSchema = Yup.object().shape({
   email: Yup.string()
@@ -117,9 +119,28 @@ class Login extends Component {
             </Fragment>
           )}
         </Formik>
+        {/* <TouchableOpacity 
+          style={styles.googlebtn}
+          onPress={GoogleLogin}>
+            <View>
+              <Text style={styles.btnTxt}>Sign in with Google</Text>
+            </View>
+        </TouchableOpacity> */}
+        
         <Button
           title="Don't have an account? Sign Up"
           onPress={this.goToSignup}
+          titleStyle={{
+            color: '#F57C00'
+          }}
+          type='clear'
+        />
+        {/* need to restyle this with the sign in with google
+        https://developers.google.com/identity/branding-guidelines
+         */}
+        <Button
+          title="Sign in with Google"
+          onPress={GoogleLogin}
           titleStyle={{
             color: '#F57C00'
           }}
@@ -142,6 +163,19 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     margin: 25
+  },
+  googlebtn: {
+    paddingLeft: 20,
+    paddingRight: 20,
+    paddingTop: 10,
+    paddingBottom: 10,
+    borderRadius: 20,
+    backgroundColor: 'rgb(3, 154, 134)',
+    marginTop: 400,
+    alignItems: 'center'
+  },
+  btnTxt: {
+    color: '#fff'
   }
 })
 

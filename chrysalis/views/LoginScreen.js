@@ -38,7 +38,7 @@ function LoginScreen({navigation}) {
                 {authentication ? (
                 <Text style={styles.btnTxt}>{authentication}</Text>
                 ) : (
-                <Text style={styles.btnTxt}>{authentication}</Text>
+                <Text style={styles.btnTxt}>words</Text>
                 )}
             </View>
         </TouchableOpacity>

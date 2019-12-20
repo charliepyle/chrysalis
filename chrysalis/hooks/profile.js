@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import Context from '../utils/context';
 
-
+// isn't being used anywhere but might be repurposeable later.
 const Profile = () => {
   const context = useContext(Context)
 
