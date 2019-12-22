@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react'
+import React, { Component, Fragment, useContext, useState } from 'react'
 import { StyleSheet, SafeAreaView, View, Text, TouchableOpacity } from 'react-native'
 import { Button } from 'react-native-elements'
 import { Ionicons } from 'react-native-ionicons'
@@ -9,9 +9,10 @@ import FormInput from '../components/FormInput'
 import FormButton from '../components/FormButton'
 import ErrorMessage from '../components/ErrorMessage'
 import AppLogo from '../components/AppLogo'
-import { withFirebaseHOC } from '../config/Firebase'
-import GoogleLogin from '../modules/utils/GoogleLogin'
-//import LoginScreen from './LoginScreen'
+import {FirebaseContext} from '../utils/firebase'
+import 'firebase/auth';
+import GoogleLogin from '../utils/GoogleLogin'
+import {withNavigation} from 'react-navigation'
 
 const validationSchema = Yup.object().shape({
   email: Yup.string()
@@ -24,28 +25,33 @@ const validationSchema = Yup.object().shape({
     .min(6, 'Password must have at least 6 characters ')
 })
 
-class Login extends Component {
-  state = {
-    passwordVisibility: true,
-    rightIcon: 'ios-eye'
+const Login = ({navigation}) => {
+  const [passwordVisibility, setVisibility] = useState(true);
+  const [rightIcon, setRightIcon] = useState('ios-eye');
+  const firebase = useContext(FirebaseContext);
+  // const { authnavigation } = useContext(AuthNavigation);
+  // const { globalnavigation } = useContext(GlobalNavigation);
+
+  // replace with navigation context API for consuming
+  const goToSignup = () => navigation.navigate('Signup')
+
+  // replace
+  const handlePasswordVisibility = () => {
+    setVisibility(!passwordVisibility);
+    setRightIcon(prevState.rightIcon === 'ios-eye' ? 'ios-eye-off' : 'ios-eye');
   }
 
-  goToSignup = () => this.props.navigation.navigate('Signup')
 
-  handlePasswordVisibility = () => {
-    this.setState(prevState => ({
-      rightIcon: prevState.rightIcon === 'ios-eye' ? 'ios-eye-off' : 'ios-eye',
-      passwordVisibility: !prevState.passwordVisibility
-    }))
-  }
-
-  handleOnLogin = async (values, actions) => {
+  const handleOnLogin = async (values, actions) => {
     const { email, password } = values
     try {
-      const response = await this.props.firebase.loginWithEmail(email, password)
+      // replace with firebase context API
+      console.log('test auth: ', firebase);
+      const response = await firebase.auth().signInWithEmailAndPassword(email, password);
 
       if (response.user) {
-        this.props.navigation.navigate('App')
+        // replace with global navigation (from auth to app)
+        navigation.navigate('App')
       }
     } catch (error) {
       actions.setFieldError('general', error.message)
@@ -53,102 +59,99 @@ class Login extends Component {
       actions.setSubmitting(false)
     }
   }
-
-  render() {
-    const { passwordVisibility, rightIcon } = this.state
-    return (
-      <SafeAreaView style={styles.container}>
-        <HideWithKeyboard style={styles.logoContainer}>
-          <AppLogo />
-        </HideWithKeyboard>
-        <Formik
-          initialValues={{ email: '', password: '' }}
-          onSubmit={(values, actions) => {
-            this.handleOnLogin(values, actions)
-          }}
-          validationSchema={validationSchema}>
-          {({
-            handleChange,
-            values,
-            handleSubmit,
-            errors,
-            isValid,
-            touched,
-            handleBlur,
-            isSubmitting
-          }) => (
-            <Fragment>
-              <FormInput
-                name='email'
-                value={values.email}
-                onChangeText={handleChange('email')}
-                placeholder='Enter email'
-                autoCapitalize='none'
-                iconName='ios-mail'
-                iconColor='#2C384A'
-                onBlur={handleBlur('email')}
+  
+  return (
+    <SafeAreaView style={styles.container}>
+      <HideWithKeyboard style={styles.logoContainer}>
+        <AppLogo />
+      </HideWithKeyboard>
+      <Formik
+        initialValues={{ email: '', password: '' }}
+        onSubmit={(values, actions) => {
+          handleOnLogin(values, actions)
+        }}
+        validationSchema={validationSchema}>
+        {({
+          handleChange,
+          values,
+          handleSubmit,
+          errors,
+          isValid,
+          touched,
+          handleBlur,
+          isSubmitting
+        }) => (
+          <Fragment>
+            <FormInput
+              name='email'
+              value={values.email}
+              onChangeText={handleChange('email')}
+              placeholder='Enter email'
+              autoCapitalize='none'
+              iconName='ios-mail'
+              iconColor='#2C384A'
+              onBlur={handleBlur('email')}
+            />
+            <ErrorMessage errorValue={touched.email && errors.email} />
+            <FormInput
+              name='password'
+              value={values.password}
+              onChangeText={handleChange('password')}
+              placeholder='Enter password'
+              secureTextEntry={passwordVisibility}
+              iconName='ios-lock'
+              iconColor='#2C384A'
+              onBlur={handleBlur('password')}
+              rightIcon={
+                <TouchableOpacity onPress={handlePasswordVisibility}>
+                 {/* <Ionicons name={rightIcon} size={28} color='grey' /> */}
+                </TouchableOpacity>
+              }
+            />
+            <ErrorMessage errorValue={touched.password && errors.password} />
+            <View style={styles.buttonContainer}>
+              <FormButton
+                buttonType='outline'
+                onPress={handleSubmit}
+                title='LOGIN'
+                buttonColor='#039BE5'
+                disabled={!isValid || isSubmitting}
+                loading={isSubmitting}
               />
-              <ErrorMessage errorValue={touched.email && errors.email} />
-              <FormInput
-                name='password'
-                value={values.password}
-                onChangeText={handleChange('password')}
-                placeholder='Enter password'
-                secureTextEntry={passwordVisibility}
-                iconName='ios-lock'
-                iconColor='#2C384A'
-                onBlur={handleBlur('password')}
-                rightIcon={
-                  <TouchableOpacity onPress={this.handlePasswordVisibility}>
-                   {/* <Ionicons name={rightIcon} size={28} color='grey' /> */}
-                  </TouchableOpacity>
-                }
-              />
-              <ErrorMessage errorValue={touched.password && errors.password} />
-              <View style={styles.buttonContainer}>
-                <FormButton
-                  buttonType='outline'
-                  onPress={handleSubmit}
-                  title='LOGIN'
-                  buttonColor='#039BE5'
-                  disabled={!isValid || isSubmitting}
-                  loading={isSubmitting}
-                />
-              </View>
-              <ErrorMessage errorValue={errors.general} />
-            </Fragment>
-          )}
-        </Formik>
-        {/* <TouchableOpacity 
-          style={styles.googlebtn}
-          onPress={GoogleLogin}>
-            <View>
-              <Text style={styles.btnTxt}>Sign in with Google</Text>
             </View>
-        </TouchableOpacity> */}
-        
-        <Button
-          title="Don't have an account? Sign Up"
-          onPress={this.goToSignup}
-          titleStyle={{
-            color: '#F57C00'
-          }}
-          type='clear'
-        />
-        {/* need to restyle this with the sign in with google
-        https://developers.google.com/identity/branding-guidelines
-         */}
-        <Button
-          title="Sign in with Google"
-          onPress={GoogleLogin}
-          titleStyle={{
-            color: '#F57C00'
-          }}
-          type='clear'
-        />
-      </SafeAreaView>
-    )
-  }
+            <ErrorMessage errorValue={errors.general} />
+          </Fragment>
+        )}
+      </Formik>
+      {/* <TouchableOpacity 
+        style={styles.googlebtn}
+        onPress={GoogleLogin}>
+          <View>
+            <Text style={styles.btnTxt}>Sign in with Google</Text>
+          </View>
+      </TouchableOpacity> */}
+      
+      <Button
+        title="Don't have an account? Sign Up"
+        onPress={goToSignup}
+        titleStyle={{
+          color: '#F57C00'
+        }}
+        type='clear'
+      />
+      {/* need to restyle this with the sign in with google
+      https://developers.google.com/identity/branding-guidelines
+       */}
+      <Button
+        title="Sign in with Google"
+        onPress={GoogleLogin}
+        titleStyle={{
+          color: '#F57C00'
+        }}
+        type='clear'
+      />
+    </SafeAreaView>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -179,4 +182,4 @@ const styles = StyleSheet.create({
   }
 })
 
-export default withFirebaseHOC(Login)
+export default withNavigation(Login)

@@ -8,21 +8,21 @@ cd chrysalis && npm install && cd ios && pod install --repo-update && cd .. && n
 
 ## Project Structure
 
-this project is an amalgamation of three or four tutorials and a few hundred lines of code that i've written myself. until this point i'd never really made a react app before, let alone a react native one, so most of the confusion comes from the amalgamation of strategies that the different tutorials used to set it up. with that said, i've tried to not get too far into this project with bad practices, and as such here's the structure built so far
+App.js is the root of the project and contains the main app container which is surrounded by the Firebase context provider so that every child component has access if needed.
 
-the project starts like all of them at App.js, which shows the appcontainer being wrapped by the firebase configs so that they can be passed around the app. the appcontainer looks at the navigation folder, specifically the index.js file, which uses the logic in initial to determine whether it should send the user to the login/register page (auth) or the home page (app)
+The appcontainer looks towards the Initial tab in the navigation folder. This performs a switch function, where if the user is logged in then it'll direct him/her to the app navigator and if not to the auth navigator.
 
-these are all in the navigation folder because they're all built on react navigation, the industry best-practice for native apps. it treats the screens on the app like a stack, so whenever the user navigates to a new screen it'll add a new screen to the stack and whenever they press the back button it'll pop it off the stack. the minor additional detail here is that the user shouldn't be able to press the back button on the bottom of the stack once they're logged in, for the only way to navigate to the auth page should be by pressing logout.
+## Auth Navigator
 
-those pages reference the the screens of the app which can be found in the views folder.
+The auth navigator consists of two views, a login screen and a signup screen, both of which reference firebase by calling useContext on the utility file in utils/firebase. The login view also has a "sign in with google" button which references the GoogleLogin button from the components section. All of the fancy styling bits were gathered from a tutorial. The signup view was similarly taken from that tutorial. We still need to refactor the input forms and associated CSS for these pages.
 
-the components folder holds components for the project. at least, that's what it will eventually do. right now there are several components that I haven't integrated into this folder as they're still tied with other pages and it'll take another few hours to reorganize all the functions and styles into here.
+## App Navigator
 
-the config folder is a way to organize all integrations with external apps. always start with index.js when you're reading a folder cause that's where the program will start reading. this contains the firebase configs and then wraps that with a firebase higher order component. a higher order component is a function that takes in a component and decorates it with some additional functionality. there's also a createContext() call in here to provide a context API for this. 
+The app navigator only has one view right now, pointing to the home screen. It's a pretty rudimentary design but connects with the Firebase app. The home screen functionally communicates with the home screen but I still want to refactor the input code and its CSS as well.
 
-then there's a hooks folder. to be honest i don't think i've really integrated this into the project but i modeled it off of this tutorial: https://www.freecodecamp.org/news/build-a-react-hooks-front-end-app-with-routing-and-authentication/ which is also where the reducers and actions come from.
+The utils folder only contains the firebase context, but when we need to create other global contexts (for auth or other reasons) I think it makes sense to put them there. Components obviously go into the components folder, and static assets into the assets one. The navigation folder is in charge of handling all logic for the app/auth navigator and switching between the two. Lastly, firebase was initialized by using react-native-config with points to the .env file, which I'm going to upload to github just so you have access to it, but with that said, I know that it's not a best practice to have all the API keys posted online so I'd like to restructure that ASAP.
 
-in fact, that tutorial above motivates the reasoning behind most of this project structure. I'd skim over it to familiarize yourself with how react hooks can be used and how i'll likely integrate that into the rest of the app I've configured (the rest of the app meaning the image uploading and email authentication)
+I feel much more comfortable with the architecture of this app after spending hours reconfiguring it to use only functional components with react hooks. This is more or less using state of the art techniques for building react/react-native apps which avoid complex topics like higher order components and modularize almost everything into functional, "stateless" components. Let me know if you have any questions about the design as I spent hours studying it and refactoring this to build it.
 
 ## License
 
