@@ -11,7 +11,7 @@ import ErrorMessage from '../components/ErrorMessage'
 import AppLogo from '../components/AppLogo'
 import {FirebaseContext} from '../utils/firebase'
 import 'firebase/auth';
-import GoogleLogin from '../utils/GoogleLogin'
+import GoogleLogin from '../components/GoogleLogin'
 import {withNavigation} from 'react-navigation'
 
 const validationSchema = Yup.object().shape({
