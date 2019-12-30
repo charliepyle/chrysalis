@@ -8,6 +8,8 @@ import {View } from 'react-native';
 
 const Initial = ({navigation}) => {
   const firebase = useContext(FirebaseContext);
+  // calling useEffect with empty brackets in the end means that it calls once
+  // on page load
   useEffect(() => {
       try {
        // checks if current user, could be optimized by using firebase

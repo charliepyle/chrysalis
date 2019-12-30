@@ -38,7 +38,6 @@ target 'Chrysalis' do
   pod 'Firebase/Auth'
 
 
-  pod 'react-native-config', :path => '../node_modules/react-native-config'
 
   target 'ChrysalisTests' do
     inherit! :search_paths

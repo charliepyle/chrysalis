@@ -1,6 +1,9 @@
 import React from 'react';
 import FirebaseProvider from './utils/firebase'
 import AppContainer from './navigation';
+import Icon from 'react-native-vector-icons/MaterialIcons'
+
+Icon.loadFont();
 
 // firebase provider is a global container around the app to provide global vars
 // app container is pulled from the navigation folder, that folder first looks 

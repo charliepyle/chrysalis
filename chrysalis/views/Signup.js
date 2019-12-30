@@ -7,11 +7,14 @@ import * as Yup from 'yup'
 import FormInput from '../components/FormInput'
 import FormButton from '../components/FormButton'
 import ErrorMessage from '../components/ErrorMessage'
-import Icon from 'react-native-vector-icons/MaterialIcons'
 import {FirebaseContext} from '../utils/firebase'
 import 'firebase/firestore';
 import {withNavigation} from 'react-navigation'
 import 'firebase/auth';
+//import Icon from 'react-native-vector-icons/MaterialIcons'
+import Icon from 'react-native-vector-icons/FontAwesome'
+
+
 
 const validationSchema = Yup.object().shape({
   name: Yup.string()
@@ -33,7 +36,7 @@ const validationSchema = Yup.object().shape({
 })
 
 const Signup = ({navigation}) => {
-  
+  Icon.loadFont();
   // local state and contexts handled with hooks below
   const [passwordVisibility, setPasswordVisibility] = useState(true);
   const [confirmPasswordVisibility, setConfirmPasswordVisibility] = useState(true);
@@ -44,7 +47,7 @@ const Signup = ({navigation}) => {
 
 
   // handler functions below
-  const goToLogin = () => navigation.navigate('Login')
+  const goToLogin = () => navigation.navigate('Login');
 
   const handlePasswordVisibility = () => {
     setPasswordIcon(passwordIcon === 'ios-eye' ? 'ios-eye-off' : 'ios-eye');
@@ -139,7 +142,7 @@ const Signup = ({navigation}) => {
               secureTextEntry={passwordVisibility}
               rightIcon={
                 <TouchableOpacity onPress={handlePasswordVisibility}>
-                  {/* <Ionicons name={passwordIcon} size={28} color='grey' /> */}
+                  {/* { <Ionicons name={passwordIcon} size={28} color='grey' /> } */}
                 </TouchableOpacity>
               }
             />
@@ -156,11 +159,11 @@ const Signup = ({navigation}) => {
               rightIcon={
                 <TouchableOpacity
                   onPress={handleConfirmPasswordVisibility}>
-                  {/* <Ionicons
+                  {/* { <Ionicons
                     name={confirmPasswordIcon}
                     size={28}
                     color='grey'
-                  /> */}
+                  /> } */}
                 </TouchableOpacity>
               }
             />
