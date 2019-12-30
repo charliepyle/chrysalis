@@ -144,7 +144,11 @@ const Login = ({navigation}) => {
        */}
       <Button
         title="Sign in with Google"
-        onPress={GoogleLogin}
+        onPress={() => {
+          if (GoogleLogin !== '') navigation.navigate('App');
+
+        }
+      }
         titleStyle={{
           color: '#F57C00'
         }}

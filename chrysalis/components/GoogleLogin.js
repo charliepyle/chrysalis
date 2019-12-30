@@ -2,6 +2,8 @@ import { GoogleSignin } from 'react-native-google-signin';
 import firebase from 'react-native-firebase';
 import database from '@react-native-firebase/database';
 
+
+
 // Calling this function will open Google for login.
 async function GoogleLogin() {
     try {
@@ -30,6 +32,7 @@ async function GoogleLogin() {
       return credential;
     } catch (e) {
       console.error(e);
+      return '';
     }
   }
 
