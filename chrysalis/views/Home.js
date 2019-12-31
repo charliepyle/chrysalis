@@ -44,7 +44,7 @@ const Home = ({navigation}) => {
 
   const handleSignout = async () => {
     try {
-      await firebase.signOut();
+      await firebase.auth().signOut()
       navigation.navigate('Auth')
     } catch (error) {
       console.log(error)

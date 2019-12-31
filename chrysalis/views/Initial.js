@@ -13,7 +13,7 @@ const Initial = ({navigation}) => {
   useEffect(() => {
       try {
        // checks if current user, could be optimized by using firebase
-       // .auth.onAuthStateChanged but i had torouble getting that function to resolve
+       // .auth.onAuthStateChanged but i had trouble getting that function to resolve
       const user = firebase.auth().currentUser;
       if (user) {
         // if the user has previously logged in
