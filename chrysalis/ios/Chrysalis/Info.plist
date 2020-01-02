@@ -30,6 +30,7 @@
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>com.googleusercontent.apps.303939570860-lb8p2rgr91rm63k1it123b0315jqk3im</string>
+        <string>fb498050357453670</string>
 			</array>
 		</dict>
 		<dict>
@@ -39,6 +40,17 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>1</string>
+  <key>FacebookAppID</key>
+  <string>498050357453670</string>
+  <key>FacebookDisplayName</key>
+  <string>Chrysalis</string>
+  <key>LSApplicationQueriesSchemes</key>
+  <array>
+    <string>fbapi</string>
+    <string>fb-messenger-api</string>
+    <string>fbauth2</string>
+    <string>fbshareextension</string>
+  </array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
