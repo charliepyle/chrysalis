@@ -30,9 +30,11 @@ target 'Chrysalis' do
   pod 'DoubleConversion', :podspec => '../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec'
   pod 'glog', :podspec => '../node_modules/react-native/third-party-podspecs/glog.podspec'
   pod 'Folly', :podspec => '../node_modules/react-native/third-party-podspecs/Folly.podspec'
-  #//# Firebase core dependency
+  # Facebook Login
+  pod 'FBSDKLoginKit'
+  # Firebase core dependency
   pod 'Firebase/Core'
-  #//# Firebase storage dependency
+  # Firebase storage dependency
   pod 'Firebase/Database'
   pod 'Firebase/Storage'
   pod 'Firebase/Auth'

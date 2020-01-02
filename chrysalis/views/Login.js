@@ -13,6 +13,13 @@ import {FirebaseContext} from '../utils/firebase'
 import 'firebase/auth';
 import GoogleLogin from '../components/GoogleLogin'
 import {withNavigation} from 'react-navigation'
+import FacebookLogin from '../components/FacebookLogin'
+
+const FBSDK = require('react-native-fbsdk');
+const {
+  LoginButton,
+  AccessToken
+} = FBSDK;
 
 const validationSchema = Yup.object().shape({
   email: Yup.string()
@@ -154,6 +161,11 @@ const Login = ({navigation}) => {
         }}
         type='clear'
       />
+      <View style={styles.label}>
+        <Text >Welcome to the Facebook SDK for React Native!</Text>
+        <FacebookLogin />
+      </View>
+      
     </SafeAreaView>
   );
 }
@@ -170,6 +182,10 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     margin: 25
+  },
+  label: {
+    color: '#F57C00',
+    alignItems: 'center'
   },
   googlebtn: {
     paddingLeft: 20,
