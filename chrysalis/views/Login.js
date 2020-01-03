@@ -149,10 +149,12 @@ const Login = ({navigation}) => {
       {/* need to restyle this with the sign in with google
       https://developers.google.com/identity/branding-guidelines
        */}
-      <Button
+      <GoogleLogin/>
+      <FacebookLogin/>
+      {/* <Button
         title="Sign in with Google"
         onPress={() => {
-          if (GoogleLogin !== '') navigation.navigate('App');
+          GoogleLogin(navigation);
 
         }
       }
@@ -160,11 +162,22 @@ const Login = ({navigation}) => {
           color: '#F57C00'
         }}
         type='clear'
-      />
-      <View style={styles.label}>
-        <Text >Welcome to the Facebook SDK for React Native!</Text>
-        <FacebookLogin />
-      </View>
+      /> */}
+      
+      {/* <Button
+        title="Sign in with Facebook"
+        onPress={() => {
+          console.log("pressed facebook button");
+          FacebookLogin();
+          
+
+        }
+      }
+        titleStyle={{
+          color: '#F57C00'
+        }}
+        type='clear'
+      /> */}
       
     </SafeAreaView>
   );

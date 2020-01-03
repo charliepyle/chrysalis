@@ -1,13 +1,20 @@
+import React from 'react'
+import {View} from 'react-native'
+import {Button} from 'react-native-elements'
 import { GoogleSignin } from 'react-native-google-signin';
 import firebase from 'react-native-firebase';
 import database from '@react-native-firebase/database';
+import {withNavigation} from 'react-navigation'
+
 
 
 
 // Calling this function will open Google for login.
-async function GoogleLogin() {
+const GoogleLogin = ({navigation}) => {
+  const login = async() => {
     try {
       // Add any configuration settings here:
+      console.log("entered google login");
       GoogleSignin.configure(
         {
             scopes: ['https://www.googleapis.com/auth/drive.readonly'],
@@ -17,6 +24,7 @@ async function GoogleLogin() {
   
       const data = await GoogleSignin.signIn();
   
+  
       // create a new firebase credential with the token
       const credential = firebase.auth.GoogleAuthProvider.credential(data.idToken, data.accessToken)
       // login with credential
@@ -25,15 +33,30 @@ async function GoogleLogin() {
       const uid = firebase.auth().currentUser.uid;
       const ref = database().ref(`/users/${uid}`);
       await ref.set({uid, name: firebase.auth().currentUser.displayName});
-
+  
       
   
       console.info(JSON.stringify(firebaseUserCredential.user.toJSON()));
+      navigation.navigate('App');
       return credential;
     } catch (e) {
       console.error(e);
-      return '';
+      return e;
     }
   }
 
-  export default GoogleLogin;
+  return (
+    <View>
+      <Button title="Sign in with Google" 
+      titleStyle={{color: '#F57C00'}}
+      type='clear'
+      onPress={() => {
+        console.log(login());
+      }}>
+        
+      </Button>
+    </View>
+  );   
+}
+
+  export default withNavigation(GoogleLogin);
