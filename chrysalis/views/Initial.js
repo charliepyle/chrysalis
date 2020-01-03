@@ -15,17 +15,10 @@ const Initial = ({navigation}) => {
         // if you're in remote JS debug mode, you need to click on the screen
         // to execute the code below
         firebase.auth().onAuthStateChanged((user) => {
-          if (user) {
-            // if the user has previously logged in
-            navigation.navigate('App')
-          } else {
-            // if the user has previously signed out from the app
-            navigation.navigate('Auth')
-          }
+          console.log(user);
+          user ? navigation.navigate('App') : navigation.navigate('Auth');
         })
-        //const user = firebase.auth().currentUser;
-        
-      
+
       } catch (error) {
         console.log(error)
       }
