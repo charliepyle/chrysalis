@@ -9,12 +9,11 @@ import {withNavigation} from 'react-navigation'
 const FacebookLogin = ({navigation}) => {
     const login = async() => {
         try {
-            console.log("entered facebook login");
             const result = await LoginManager.logInWithPermissions(['public_profile', 'email']);
 
             if (result.isCancelled) {
                 // handle this however suites the flow of your app
-                alert("User cancelled request");
+                return console.log("user cancelled sign in request");
             }
             
             const data = await AccessToken.getCurrentAccessToken();
@@ -36,7 +35,7 @@ const FacebookLogin = ({navigation}) => {
             //alert("Login was successful with permissions: " + result.grantedPermissions)
         }
         catch (e) {
-            console.error(e);
+            console.log(e);
             return e;
         }
     }    

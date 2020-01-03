@@ -11,7 +11,7 @@ import {FirebaseContext} from '../utils/firebase'
 import 'firebase/firestore';
 import {withNavigation} from 'react-navigation'
 import 'firebase/auth';
-//import Icon from 'react-native-vector-icons/MaterialIcons'
+//import Icon from 'react-native-vector-icons'
 import Icon from 'react-native-vector-icons/FontAwesome'
 
 

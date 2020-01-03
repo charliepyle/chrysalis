@@ -14,8 +14,7 @@ const GoogleLogin = ({navigation}) => {
   const login = async() => {
     try {
       // Add any configuration settings here:
-      console.log("entered google login");
-      GoogleSignin.configure(
+      await GoogleSignin.configure(
         {
             scopes: ['https://www.googleapis.com/auth/drive.readonly'],
             webClientId: '303939570860-v560c7j3vmi210n1foijq5ebau9ucoq3.apps.googleusercontent.com', // required
@@ -23,6 +22,8 @@ const GoogleLogin = ({navigation}) => {
       );
   
       const data = await GoogleSignin.signIn();
+
+
   
   
       // create a new firebase credential with the token
@@ -40,7 +41,8 @@ const GoogleLogin = ({navigation}) => {
       navigation.navigate('App');
       return credential;
     } catch (e) {
-      console.error(e);
+      //return console.log(e);
+      //console.error(e);
       return e;
     }
   }

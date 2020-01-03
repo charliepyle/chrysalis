@@ -2,7 +2,7 @@ import React, { useEffect, useContext } from 'react'
 import {FirebaseContext} from '../utils/firebase'
 import 'firebase/auth';
 import {withNavigation} from 'react-navigation'
-import {View } from 'react-native';
+import { View } from 'react-native';
 
 
 
@@ -12,16 +12,19 @@ const Initial = ({navigation}) => {
   // on page load
   useEffect(() => {
       try {
-       // checks if current user, could be optimized by using firebase
-       // .auth.onAuthStateChanged but i had trouble getting that function to resolve
-      const user = firebase.auth().currentUser;
-      if (user) {
-        // if the user has previously logged in
-        navigation.navigate('App')
-      } else {
-        // if the user has previously signed out from the app
-        navigation.navigate('Auth')
-      }
+        // if you're in remote JS debug mode, you need to click on the screen
+        // to execute the code below
+        firebase.auth().onAuthStateChanged((user) => {
+          if (user) {
+            // if the user has previously logged in
+            navigation.navigate('App')
+          } else {
+            // if the user has previously signed out from the app
+            navigation.navigate('Auth')
+          }
+        })
+        //const user = firebase.auth().currentUser;
+        
       
       } catch (error) {
         console.log(error)
