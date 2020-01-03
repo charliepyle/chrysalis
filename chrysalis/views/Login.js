@@ -15,12 +15,6 @@ import GoogleLogin from '../components/GoogleLogin'
 import {withNavigation} from 'react-navigation'
 import FacebookLogin from '../components/FacebookLogin'
 
-const FBSDK = require('react-native-fbsdk');
-const {
-  LoginButton,
-  AccessToken
-} = FBSDK;
-
 const validationSchema = Yup.object().shape({
   email: Yup.string()
     .label('Email')
