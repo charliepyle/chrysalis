@@ -2,7 +2,7 @@ import React, { useEffect, useContext } from 'react'
 import {FirebaseContext} from '../utils/firebase'
 import 'firebase/auth';
 import {withNavigation} from 'react-navigation'
-import { View } from 'react-native';
+import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
 
 
 
@@ -15,7 +15,6 @@ const Initial = ({navigation}) => {
         // if you're in remote JS debug mode, you need to click on the screen
         // to execute the code below
         firebase.auth().onAuthStateChanged((user) => {
-          console.log(user);
           user ? navigation.navigate('App') : navigation.navigate('Auth');
         })
 
@@ -24,8 +23,19 @@ const Initial = ({navigation}) => {
       }
   }, []);
 
-  return (<View></View>);
+  return (<View style={styles.container}>
+    <Text>Loading</Text>
+    <ActivityIndicator size="large" />
+  </View>);
 
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  }
+})
 
 export default withNavigation(Initial)
