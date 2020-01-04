@@ -32,8 +32,9 @@ const GoogleLogin = ({navigation}) => {
       const firebaseUserCredential = await firebase.auth().signInWithCredential(credential);
   
       const uid = firebase.auth().currentUser.uid;
+      const email = firebase.auth().currentUser.email;
       const ref = database().ref(`/users/${uid}`);
-      await ref.set({uid, name: firebase.auth().currentUser.displayName});
+      await ref.set({uid, email, name: firebase.auth().currentUser.displayName});
   
       
   
@@ -41,8 +42,6 @@ const GoogleLogin = ({navigation}) => {
       navigation.navigate('App');
       return credential;
     } catch (e) {
-      //return console.log(e);
-      //console.error(e);
       return e;
     }
   }

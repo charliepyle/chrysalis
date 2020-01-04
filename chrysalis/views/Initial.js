@@ -39,3 +39,18 @@ const styles = StyleSheet.create({
 })
 
 export default withNavigation(Initial)
+
+const ref = firebase.firestore().collection('users').doc(uid);
+const doc = ref.get()
+.then(doc => {
+  if (!doc.exists) {
+    console.log('No user'); 
+  } else {
+    console.log('user found');
+    const name = doc.name;
+    setData({name: name});
+  }
+})
+.catch(err => {
+  console.log('query error: ', err);
+})
