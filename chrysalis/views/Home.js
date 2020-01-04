@@ -1,4 +1,4 @@
-import React, { useContext, useState, Component } from 'react'
+import React, { useContext, useState, useEffect, Component } from 'react'
 import {
   StyleSheet,
   Text,
@@ -11,7 +11,11 @@ import {
   ScrollView
 } from 'react-native';
 import uuid from 'react-native-uuid'
-import {withNavigation} from 'react-navigation'
+
+import { createMaterialBottomTabNavigator } from 'react-navigation-material-bottom-tabs'
+import Profile from './Profile'
+import Swap from './Swap'
+
 import {FirebaseContext} from '../utils/firebase'
 // not sure if i need these two imports below
 import 'firebase/auth';
@@ -20,6 +24,8 @@ import 'firebase/storage';
 
 //import { Button } from 'react-native-elements'
 import ImagePicker from 'react-native-image-picker';
+
+import PhotoGrid from '../components/PhotoGrid'
 
 // had to move styles above variables so it could read them. this should
 // be refactored into a style sheet for the actual page. in fact. the individual
@@ -32,6 +38,7 @@ const Home = ({navigation}) => {
   
   // context and local state
   const firebase = useContext(FirebaseContext);
+  const [pics, setPics] = useState({ urls: [] })
   const [uploading, setUploading] = useState(false);
   const [imgSource, setImgSource] = useState('');
   const [progress, setProgress] = useState(0);
@@ -42,14 +49,6 @@ const Home = ({navigation}) => {
   const windowWidth = Dimensions.get('window').width;
   const actionBtnStyles = [styles.btn, disabledStyle];
 
-  const handleSignout = async () => {
-    try {
-      await firebase.auth().signOut()
-      navigation.navigate('Auth')
-    } catch (error) {
-      console.log(error)
-    }
-  }
   const pickImage = () => {
     ImagePicker.showImagePicker(options, response => {
       if (response.didCancel) {
@@ -114,84 +113,93 @@ const Home = ({navigation}) => {
     
   };
 
+  useEffect(() => {
+    const pullImages = async () => {
+      const pic_ref = firebase.firestore().collection('images').orderBy("timestamp", "desc")
+      const pic_doc = pic_ref.onSnapshot(pic_doc => {
+        let file_names = []
+        pic_doc.forEach(pd => {
+          file_names.push(`swapped_images/${pd.data().filename}`)
+        })
+        
+        let download_urls = []
+        file_names.forEach(async name => {
+          const pr = firebase.storage().ref(name)
+          const url = await pr.getDownloadURL()
+          
+          download_urls.push(url)
+          console.log(download_urls)
+          setPics({ urls: download_urls })
+        })
+      })
+    }
 
-
+    pullImages()
+  }, [])
 
   return (
     <View style={styles.container}>
-      <ScrollView>
-      <View style={styles.container}>
-        <TouchableOpacity
-          style={actionBtnStyles}
-          onPress={pickImage}
-          disabled={uploading}
-        >
-          <View>
-            <Text style={styles.btnTxt}>Pick image</Text>
-          </View>
-        </TouchableOpacity>
-        {/** Display selected image */}
-        {imgSource !== '' && (
-          <View>
-            <Image source={imgSource} style={styles.image} />
-            {uploading && (
-              <View
-                style={[styles.progressBar, { width: `${progress}%` }]}
-              />
-            )}
-            <TouchableOpacity
-              style={actionBtnStyles}
-              onPress={uploadImage}
-              disabled={uploading}
-            >
-              <View>
-                {uploading ? (
-                  <Text style={styles.btnTxt}>Uploading ...</Text>
-                ) : (
-                  <Text style={styles.btnTxt}>Upload image</Text>
-                )}
-              </View>
-            </TouchableOpacity>
-          </View>
-        )}
-
+      <TouchableOpacity
+        style={actionBtnStyles}
+        onPress={pickImage}
+        disabled={uploading}
+      >
         <View>
-          <Text
-            style={{
-              fontWeight: '600',
-              paddingTop: 20,
-              alignSelf: 'center'
-            }}
-          >
-            {images.length > 0
-              ? 'Your uploaded images'
-              : 'There is no image you uploaded'}
-          </Text>
+          <Text style={styles.btnTxt}>Pick image</Text>
         </View>
-        <FlatList
-          numColumns={2}
-          style={{ marginTop: 20 }}
-          data={images}
-          renderItem={({ item: image, index }) => (
-            <ImageRow
-              windowWidth={windowWidth}
-              image={image}
-              popImage={() => removeImage(index)}
+      </TouchableOpacity>
+      {/** Display selected image */}
+      {imgSource !== '' && (
+        <View>
+          <Image source={imgSource} style={styles.image} />
+          {uploading && (
+            <View
+              style={[styles.progressBar, { width: `${progress}%` }]}
             />
           )}
-          keyExtractor={index => index}
-        />
+          <TouchableOpacity
+            style={actionBtnStyles}
+            onPress={uploadImage}
+            disabled={uploading}
+          >
+            <View>
+              {uploading ? (
+                <Text style={styles.btnTxt}>Uploading ...</Text>
+              ) : (
+                <Text style={styles.btnTxt}>Upload image</Text>
+              )}
+            </View>
+          </TouchableOpacity>
+        </View>
+      )}
+
+      <View>
+        <Text
+          style={{
+            fontWeight: '600',
+            paddingTop: 20,
+            alignSelf: 'center'
+          }}
+        >
+          {images.length > 0
+            ? 'Your uploaded images'
+            : 'There is no image you uploaded'}
+        </Text>
       </View>
-    </ScrollView>
-      <Text>Home</Text>
-      <Button
-        title='Signout'
-        onPress={handleSignout}
-        titleStyle={{
-          color: '#F57C00'
-        }}
-        type='clear'
+      <FlatList
+        numColumns={2}
+        style={{ marginTop: 20 }}
+        data={images}
+        renderItem={({ item: image, index }) => (
+          <ImageRow
+            windowWidth={windowWidth}
+            image={image}
+            popImage={() => removeImage(index)}
+          />
+        )}
+        keyExtractor={index => index}
       />
+      <PhotoGrid photos={pics.urls} />
     </View>
   )
 }
@@ -201,11 +209,8 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     backgroundColor: '#ffffff',
-    marginTop: 20,
-    paddingLeft: 5,
-    paddingRight: 5,
     alignItems: 'center',
-  justifyContent: 'center'
+    justifyContent: 'center'
   },
   btn: {
     paddingLeft: 20,
@@ -256,6 +261,12 @@ const styles = StyleSheet.create({
   }
 });
 
-
-
-export default withNavigation(Home)
+export default createMaterialBottomTabNavigator({
+  Feed: {screen: Home},
+  Swap: {screen: Swap},
+  Profile: {screen: Profile}
+}, {
+  activeColor: 'rgb(3, 154, 229)',
+  inactiveColor: '#000',
+  barStyle: { backgroundColor: '#fff' },
+})
