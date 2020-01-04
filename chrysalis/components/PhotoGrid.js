@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext } from 'react'
 
 import {
   Dimensions,
@@ -8,9 +8,19 @@ import {
   TouchableHighlight
 } from 'react-native'
 
+import uuid from 'react-native-uuid'
+
+import {FirebaseContext} from '../utils/firebase'
+import 'firebase/auth';
+import 'firebase/firestore';
+import 'firebase/storage';
+
 import axios from 'axios'
 
 const PhotoGrid = ({ photos, type, ...rest }) => {
+
+  const firebase = useContext(FirebaseContext)
+  let uid  = firebase.auth().currentUser.uid
 
   const windowWidth = Dimensions.get('window').width
   const IMAGES_PER_ROW = 3
@@ -23,12 +33,21 @@ const PhotoGrid = ({ photos, type, ...rest }) => {
   // Probably not the best way to do this
   const onImagePress = (image) => {
     if (type === "SWAP") {
+      let pic_id = uuid.v1()
       axios.post('http://localhost:5000/swap_photo_temp', {
         url: image,
-        filename: "sample_file"
+        filename: pic_id
       })
       .then(function (response) {
-        console.log(response);
+        picData = {
+          filename: `${pic_id}.jpg`, 
+          uid: uid,
+          timestamp: new Date().getTime()
+        }
+
+        firebase.firestore().collection('images').doc(`${pic_id}`).set(picData).then(res => {
+          console.log(res)
+        })
       })
       .catch(function (error) {
         console.log(error);

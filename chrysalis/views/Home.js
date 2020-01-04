@@ -1,4 +1,4 @@
-import React, { useContext, useState, Component } from 'react'
+import React, { useContext, useState, useEffect, Component } from 'react'
 import {
   StyleSheet,
   Text,
@@ -38,6 +38,7 @@ const Home = ({navigation}) => {
   
   // context and local state
   const firebase = useContext(FirebaseContext);
+  const [pics, setPics] = useState({ urls: [] })
   const [uploading, setUploading] = useState(false);
   const [imgSource, setImgSource] = useState('');
   const [progress, setProgress] = useState(0);
@@ -112,23 +113,29 @@ const Home = ({navigation}) => {
     
   };
 
+  useEffect(() => {
+    const pullImages = async () => {
+      const pic_ref = firebase.firestore().collection('images').orderBy("timestamp", "desc")
+      const pic_doc = pic_ref.onSnapshot(pic_doc => {
+        let file_names = []
+        pic_doc.forEach(pd => {
+          file_names.push(`swapped_images/${pd.data().filename}`)
+        })
+        
+        let download_urls = []
+        file_names.forEach(async name => {
+          const pr = firebase.storage().ref(name)
+          const url = await pr.getDownloadURL()
+          
+          download_urls.push(url)
+          console.log(download_urls)
+          setPics({ urls: download_urls })
+        })
+      })
+    }
 
-  let pics = ['https://i.imgur.com/LLzTFMU.png', 
-  'https://i.imgur.com/dURBThe.jpg', 
-  'https://i.imgur.com/xs3373j.jpg',
-  'https://i.imgur.com/LLzTFMU.png', 
-  'https://i.imgur.com/dURBThe.jpg', 
-  'https://i.imgur.com/xs3373j.jpg',
-  'https://i.imgur.com/LLzTFMU.png', 
-  'https://i.imgur.com/dURBThe.jpg', 
-  'https://i.imgur.com/xs3373j.jpg',
-  'https://i.imgur.com/LLzTFMU.png', 
-  'https://i.imgur.com/dURBThe.jpg', 
-  'https://i.imgur.com/xs3373j.jpg',
-  'https://i.imgur.com/LLzTFMU.png', 
-  'https://i.imgur.com/dURBThe.jpg', 
-  'https://i.imgur.com/xs3373j.jpg'
-  ]
+    pullImages()
+  }, [])
 
   return (
     <View style={styles.container}>
@@ -192,7 +199,7 @@ const Home = ({navigation}) => {
         )}
         keyExtractor={index => index}
       />
-      <PhotoGrid photos={pics} />
+      <PhotoGrid photos={pics.urls} />
     </View>
   )
 }

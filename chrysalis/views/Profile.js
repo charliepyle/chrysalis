@@ -1,4 +1,4 @@
-import React, { useContext, useState, Component } from 'react'
+import React, { useContext, useState, useEffect, Component } from 'react'
 import { withNavigation } from 'react-navigation'
 import {
   StyleSheet,
@@ -8,26 +8,57 @@ import {
   Button
 } from 'react-native';
 
+import {FirebaseContext} from '../utils/firebase'
+import 'firebase/auth';
+import 'firebase/firestore';
+import 'firebase/storage';
+
 import PhotoGrid from '../components/PhotoGrid'
 
 const Profile = ({navigation}) => {
+  const firebase = useContext(FirebaseContext)
+  const [data, setData] = useState({ name: "" })
+  const [pics, setPics] = useState({ urls: [] })
 
-  let pics = ['https://i.imgur.com/LLzTFMU.png', 
-  'https://i.imgur.com/dURBThe.jpg', 
-  'https://i.imgur.com/xs3373j.jpg',
-  'https://i.imgur.com/LLzTFMU.png', 
-  'https://i.imgur.com/dURBThe.jpg', 
-  'https://i.imgur.com/xs3373j.jpg',
-  'https://i.imgur.com/LLzTFMU.png', 
-  'https://i.imgur.com/dURBThe.jpg', 
-  'https://i.imgur.com/xs3373j.jpg',
-  'https://i.imgur.com/LLzTFMU.png', 
-  'https://i.imgur.com/dURBThe.jpg', 
-  'https://i.imgur.com/xs3373j.jpg',
-  'https://i.imgur.com/LLzTFMU.png', 
-  'https://i.imgur.com/dURBThe.jpg', 
-  'https://i.imgur.com/xs3373j.jpg'
-  ]
+  let uid  = firebase.auth().currentUser.uid
+
+  useEffect(() => {
+    const pullName = async () => {
+      const ref = firebase.firestore().collection('users').doc(uid)
+      const doc = ref.get().then(doc => {
+        if (!doc.exists) {
+          console.log('No user');
+        } else {
+          console.log('User Found')
+          const name = doc.data().name
+
+          setData({name: name})
+        }
+      }).catch(err => {
+        console.log('query error: ', err)
+      })
+
+      const pic_ref = firebase.firestore().collection('images').where("uid", "==", uid)
+      const pic_doc = pic_ref.onSnapshot(pic_doc => {
+        let file_names = []
+        pic_doc.forEach(pd => {
+          file_names.push(`swapped_images/${pd.data().filename}`)
+        })
+        
+        let download_urls = []
+        file_names.forEach(async name => {
+          const pr = firebase.storage().ref(name)
+          const url = await pr.getDownloadURL()
+          
+          download_urls.push(url)
+          console.log(download_urls)
+          setPics({ urls: download_urls })
+        })
+      })
+    }
+
+    pullName()
+  }, [])
 
   const handleSignout = async () => {
     try {
@@ -44,7 +75,7 @@ const Profile = ({navigation}) => {
         <Image style={styles.avatar} source={{uri: 'https://bootdey.com/img/Content/avatar/avatar6.png'}}/>
         <View style={styles.body}>
           <View style={styles.bodyContent}>
-            <Text style={styles.name}>John Doe</Text>
+            <Text style={styles.name}>{data.name}</Text>
             <Text style={styles.info}>UX Designer / Mobile developer</Text>
             <Text style={styles.description}>Lorem ipsum dolor sit amet, saepe sapientem eu nam. Qui ne assum electram expetendis, omittam deseruisse consequuntur ius an,</Text>
           </View>
@@ -57,7 +88,7 @@ const Profile = ({navigation}) => {
         }}
         type='clear'
       />
-      <PhotoGrid photos={pics} />
+      <PhotoGrid photos={pics.urls} />
     </View>
   );
 

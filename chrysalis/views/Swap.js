@@ -22,9 +22,17 @@ const Swap = ({navigation}) => {
 
   useEffect(() => {
     const pullMemes = async () => {
-      const ref = firebase.storage().ref(`memes/3l1r6e.jpg`)
-      const url = await ref.getDownloadURL()
-      setData({pics: [url]})
+      const ref = firebase.storage().ref('memes')
+      
+      let url = []
+      ref.listAll().then(res => {
+        res.items.forEach(itemRef => {
+          itemRef.getDownloadURL().then(durl => {
+            url.push(durl)
+            setData({pics: url})
+          })
+        })
+      })
     }
 
     pullMemes()
