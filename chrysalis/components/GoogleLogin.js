@@ -1,19 +1,21 @@
-import React from 'react'
+import React, {useContext}from 'react'
 import {View} from 'react-native'
 import {Button} from 'react-native-elements'
 import { GoogleSignin } from 'react-native-google-signin';
-import firebase from 'react-native-firebase';
 import database from '@react-native-firebase/database';
 import {withNavigation} from 'react-navigation'
+import {FirebaseContext} from '../utils/firebase'
 
 
 
 
 // Calling this function will open Google for login.
 const GoogleLogin = ({navigation}) => {
+  const firebase = useContext(FirebaseContext)
   const login = async() => {
     try {
       // Add any configuration settings here:
+      
       await GoogleSignin.configure(
         {
             scopes: ['https://www.googleapis.com/auth/drive.readonly'],
