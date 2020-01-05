@@ -14,15 +14,17 @@ The appcontainer looks towards the Initial tab in the navigation folder. This pe
 
 ## Auth Navigator
 
-The auth navigator consists of two views, a login screen and a signup screen, both of which reference firebase by calling useContext on the utility file in utils/firebase. The login view also has a "sign in with google" button which references the GoogleLogin button from the components section. All of the fancy styling bits were gathered from a tutorial. The signup view was similarly taken from that tutorial. We still need to refactor the input forms and associated CSS for these pages.
+The auth navigator consists of two views, a login screen and a signup screen, both of which reference firebase by calling useContext on the utility file in utils/firebase. The login view also has a "sign in with google" button which references the GoogleLogin button from the components section and a "sign in with facebook" button that does the same from the FB component. The style has largely been ignored for later as we've focused on the initial functionality and infrastructure to begin.
 
 ## App Navigator
 
-The app navigator only has one view right now, pointing to the home screen. It's a pretty rudimentary design but connects with the Firebase app. The home screen functionally communicates with the home screen but I still want to refactor the input code and its CSS as well.
+The app navigator moves between the feed, swap, and home screens. The home screen allows users to see a feed of popular swapped images and upload photos of their own. tapping on an image in the swap screen sends the image to the server for modification. lastly, the profile page displays all swapped images created by the user.
 
-The utils folder only contains the firebase context, but when we need to create other global contexts (for auth or other reasons) I think it makes sense to put them there. Components obviously go into the components folder, and static assets into the assets one. The navigation folder is in charge of handling all logic for the app/auth navigator and switching between the two. Lastly, firebase was initialized by using react-native-config with points to the .env file, which I'm going to upload to github just so you have access to it, but with that said, I know that it's not a best practice to have all the API keys posted online so I'd like to restructure that ASAP.
+The utils folder only contains the firebase context, but when we need to create other global contexts (for auth or other reasons) they should be put there. Components obviously go into the components folder, and static assets into the assets one. The navigation folder is in charge of handling all logic for the app/auth navigator and switching between the two. Lastly, firebase was initialized by using react-native-config with points to the .env file, which is uploaded to github so we all have access to it, but with that said, I know that it's not a best practice to have all the API keys posted online so I'd like to restructure that ASAP.
 
-I feel much more comfortable with the architecture of this app after spending hours reconfiguring it to use only functional components with react hooks. This is more or less using state of the art techniques for building react/react-native apps which avoid complex topics like higher order components and modularize almost everything into functional, "stateless" components. Let me know if you have any questions about the design as I spent hours studying it and refactoring this to build it.
+Find instructions for how to run the server in the server submodule of the app. i.e. click on the 'server' folder and there will be a readme in there with instructions. run the server on port 5000 as that's the way our file axios is configured to talk to it.
+
+cheers!
 
 ## License
 
