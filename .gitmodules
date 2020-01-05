@@ -1,0 +1,3 @@
+[submodule "server"]
+	path = server
+	url = https://github.com/chaseklvk/faceswap_model_service.git
