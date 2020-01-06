@@ -11,9 +11,6 @@ import {FirebaseContext} from '../utils/firebase'
 import 'firebase/firestore';
 import {withNavigation} from 'react-navigation'
 import 'firebase/auth';
-//import Icon from 'react-native-vector-icons'
-import Icon from 'react-native-vector-icons/FontAwesome'
-import Icon1 from 'react-native-vector-icons/MaterialIcons'
 
 
 
@@ -39,8 +36,6 @@ const validationSchema = Yup.object().shape({
 })
 
 const Signup = ({navigation}) => {
-  Icon.loadFont();
-  Icon1.loadFont();
   // local state and contexts handled with hooks below
   const [passwordVisibility, setPasswordVisibility] = useState(true);
   const [confirmPasswordVisibility, setConfirmPasswordVisibility] = useState(true);

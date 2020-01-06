@@ -1,7 +1,7 @@
 import React, {useContext}from 'react'
 import {View} from 'react-native'
 import {Button} from 'react-native-elements'
-import { GoogleSignin } from 'react-native-google-signin';
+import { GoogleSignin, GoogleSigninButton } from 'react-native-google-signin';
 import database from '@react-native-firebase/database';
 import {withNavigation} from 'react-navigation'
 import {FirebaseContext} from '../utils/firebase'
@@ -49,15 +49,21 @@ const GoogleLogin = ({navigation}) => {
   }
 
   return (
-    <View>
-      <Button title="Sign in with Google" 
+    <View style={{alignItems: 'center', justifyContent: 'center'}}>
+      <GoogleSigninButton 
+        style={{ width: 312, height: 48 }}
+        size={GoogleSigninButton.Size.Wide}
+        color={GoogleSigninButton.Color.Light}
+        onPress={() => { console.log(login()) }}
+      />
+      {/* <Button title="Sign in with Google" 
       titleStyle={{color: '#F57C00'}}
       type='clear'
       onPress={() => {
         console.log(login());
       }}>
         
-      </Button>
+      </Button> */}
     </View>
   );   
 }

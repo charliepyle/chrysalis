@@ -1,4 +1,4 @@
-import React, {useState, useContext}from 'react'
+import React, {useContext}from 'react'
 import {View} from 'react-native'
 import {Button} from 'react-native-elements'
 import database from '@react-native-firebase/database';
@@ -47,7 +47,7 @@ const FacebookLogin = ({navigation}) => {
     return (
         <View>
           <Button title="Sign in with Facebook" 
-          titleStyle={{color: '#F57C00'}}
+          titleStyle={{color: 'blue'}}
           type='clear'
           onPress={() => {
             console.log(login());
