@@ -2,26 +2,32 @@ import React, {useContext}from 'react'
 import {View} from 'react-native'
 import {Button} from 'react-native-elements'
 import database from '@react-native-firebase/database';
-import { AccessToken, LoginManager } from 'react-native-fbsdk';
+import { AccessToken, LoginManager, GraphRequest } from 'react-native-fbsdk';
+import {ADD_OR_UPDATE_USER} from '../utils/mutations';
 import {withNavigation} from 'react-navigation'
 import {FirebaseContext} from '../utils/firebase'
 import { useMutation } from '@apollo/react-hooks';
-import gql from 'graphql-tag'
 
-const ADD_TODO = gql`
-    mutation createUserMutation($firstName: String!, $lastName: String!, $email: String!, $password: String!) {
-        createUser(firstName: $firstName, lastName: $lastName, email: $email, password: $password) {
-            id
-            firstName
-            lastName
-        }
-    }
-`;
+const initUser = (data) => {
+    const {accessToken} = data
+    console.log('alldata: ', data);
+    console.log('init token: ', accessToken)
+    return new Promise((resolve, reject) => {
+        fetch('https://graph.facebook.com/v5.0/me?fields=email,first_name,last_name,friends&access_token=' + accessToken)
+        .then(response => response.json())
+        .then(json => {
+            resolve(json)
+        }).catch(e => {
+            reject(console.error('Error getting facebook data: ', e))
+        })
+    })
+    
+}
 
 
 const FacebookLogin = ({navigation}) => {
     const firebase = useContext(FirebaseContext)
-    const [addTodo, { gqlResults }] = useMutation(ADD_TODO);
+    const [addUser, { gqlResults }] = useMutation(ADD_OR_UPDATE_USER);
     const login = async() => {
         try {
             
@@ -37,25 +43,24 @@ const FacebookLogin = ({navigation}) => {
             if (!data) {
                 alert('Issue obtaining access token');
             }
-            console.log(data);
+            initUser(data).then(json => {
+                console.log('addUser results: ', addUser({variables: {
+                    firstName: json.first_name,
+                    lastName: json.last_name,
+                    email: json.email,
+                    password: "testPassword3"
+                }}));
+            });
+            
+
             const credential = await firebase.auth.FacebookAuthProvider.credential(data.accessToken);
-            console.log('credential: ', credential)
             
             const firebaseUserCredential = await firebase.auth().signInWithCredential(credential);
             
             const uid = firebase.auth().currentUser.uid;
             const email = firebase.auth().currentUser.email;
 
-            console.log('1')
-
-            console.log(addTodo({variables: {
-                firstName: "testFirstName2",
-                lastName: "testLastName2",
-                email: "testEmail2",
-                password: "testPassword2"
-            }}));
             
-            console.log('graphql results ', gqlResults)
             const ref = database().ref(`/users/${uid}`);
             await ref.set({uid, email, name: firebase.auth().currentUser.displayName});
             console.info(JSON.stringify(firebaseUserCredential.user.toJSON()));

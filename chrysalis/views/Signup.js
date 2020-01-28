@@ -10,6 +10,8 @@ import ErrorMessage from '../components/ErrorMessage'
 import {FirebaseContext} from '../utils/firebase'
 import 'firebase/firestore';
 import {withNavigation} from 'react-navigation'
+import { useMutation } from '@apollo/react-hooks';
+import {ADD_OR_UPDATE_USER} from '../utils/mutations';
 import 'firebase/auth';
 
 
@@ -17,10 +19,14 @@ import 'firebase/auth';
 
 
 const validationSchema = Yup.object().shape({
-  name: Yup.string()
-    .label('Name')
+  firstName: Yup.string()
+    .label('firstName')
     .required()
     .min(2, 'Must have at least 2 characters'),
+  lastName: Yup.string()
+  .label('lastName')
+  .required()
+  .min(2, 'Must have at least 2 characters'),
   email: Yup.string()
     .label('Email')
     .email('Enter a valid email')
@@ -42,7 +48,7 @@ const Signup = ({navigation}) => {
   const [passwordIcon, setPasswordIcon] = useState('ios-eye');
   const [confirmPasswordIcon, setConfirmPasswordIcon] = useState('ios-eye');
   const firebase = useContext(FirebaseContext);
-
+  const [addUser, { gqlResults }] = useMutation(ADD_OR_UPDATE_USER);
 
 
   // handler functions below
@@ -59,14 +65,19 @@ const Signup = ({navigation}) => {
   }
 
   const handleOnSignup = async (values, actions) => {
-    const { name, email, password } = values
-
+    const { firstName, lastName, email, password } = values
+      console.log('addUser results: ', addUser({variables: {
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        password: password
+    }}));
     try {
       const response = await firebase.auth().createUserWithEmailAndPassword(email, password)
 
       if (response.user.uid) {
         const { uid } = response.user
-        const userData = { email, name, uid }
+        const userData = { email, firstName, lastName, uid }
         await firebase
         .firestore()
         .collection('users')
@@ -87,7 +98,8 @@ const Signup = ({navigation}) => {
     <SafeAreaView style={styles.container}>
       <Formik
         initialValues={{
-          name: '',
+          firstName: '',
+          lastName: '',
           email: '',
           password: '',
           confirmPassword: '',
@@ -110,15 +122,25 @@ const Signup = ({navigation}) => {
         }) => (
           <Fragment>
             <FormInput
-              name='name'
-              value={values.name}
-              onChangeText={handleChange('name')}
-              placeholder='Enter your full name'
+              name='firstName'
+              value={values.firstName}
+              onChangeText={handleChange('firstName')}
+              placeholder='Enter your first name'
               iconName='md-person'
               iconColor='#2C384A'
-              onBlur={handleBlur('name')}
+              onBlur={handleBlur('firstName')}
             />
-            <ErrorMessage errorValue={touched.name && errors.name} />
+            <ErrorMessage errorValue={touched.firstName && errors.firstName} />
+            <FormInput
+              name='lastName'
+              value={values.lastName}
+              onChangeText={handleChange('lastName')}
+              placeholder='Enter your last name'
+              iconName='md-person'
+              iconColor='#2C384A'
+              onBlur={handleBlur('lastName')}
+            />
+            <ErrorMessage errorValue={touched.lastName && errors.lastName} />
             <FormInput
               name='email'
               value={values.email}

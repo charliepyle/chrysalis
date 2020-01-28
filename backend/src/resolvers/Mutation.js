@@ -1,10 +1,14 @@
 function createUser(root, args, context) {
-    return context.prisma.createUser({
-        firstName: args.firstName,
-        lastName: args.lastName,
-        email: args.email,
-        password: args.password,
-    })
+    context.prisma.$exists.user({ email: args.email }).then(() => {
+        return updateUser(root, args, context);
+    }).catch(() => {
+        return context.prisma.createUser({
+            firstName: args.firstName,
+            lastName: args.lastName,
+            email: args.email,
+            password: args.password,
+        })
+    })   
 }
 
 function updateUser(root, args, context) {
@@ -16,7 +20,7 @@ function updateUser(root, args, context) {
             password: args.password,
         },
         where: {
-            id: args.id
+            email: args.email
         }
     })
 }

@@ -2,6 +2,7 @@ type Query {
     images: [Image!]!
     userImages(id: ID!): [Image!]!
     users: [User!]!
+    user(email: String!): User
 }
 
 type Mutation {

@@ -14,6 +14,8 @@ import 'firebase/auth';
 import GoogleLogin from '../components/GoogleLogin'
 import {withNavigation} from 'react-navigation'
 import FacebookLogin from '../components/FacebookLogin'
+import {QUERY_USER} from '../utils/queries';
+import { useLazyQuery } from '@apollo/react-hooks';
 
 const validationSchema = Yup.object().shape({
   email: Yup.string()
@@ -30,6 +32,7 @@ const Login = ({navigation}) => {
   const [passwordVisibility, setVisibility] = useState(true);
   const [rightIcon, setRightIcon] = useState('ios-eye');
   const firebase = useContext(FirebaseContext);
+  const [queryUser, { loading, data }] = useLazyQuery(QUERY_USER);
   // const { authnavigation } = useContext(AuthNavigation);
   // const { globalnavigation } = useContext(GlobalNavigation);
 
@@ -48,12 +51,41 @@ const Login = ({navigation}) => {
     try {
       // replace with firebase context API
       console.log('test auth: ', firebase);
+      // const {loading, error, data} = useQuery(QUERY_USER, {
+      //   variables: {
+      //         firstName: firstName,
+      //         lastName: lastName,
+      //         email: email,
+      //         password: password
+      //   }
+      // });
+      // if (data)
+
+      /* the code below checks if the user exists in the MySQL instance.
+      error handling isn't implemented yet but the query works for the future*/
+      queryUser({variables: {
+        email: email,
+      }});
+      if (data) {
+        console.log(data);
+
+      } 
+
       const response = await firebase.auth().signInWithEmailAndPassword(email, password);
 
-      if (response.user) {
-        // replace with global navigation (from auth to app)
-        navigation.navigate('App')
-      }
+        if (response.user) {
+          // replace with global navigation (from auth to app)
+          navigation.navigate('App')
+        }
+      
+      //console.log(data);
+    // .then(response => {
+    //   console.log(response)
+    // }).catch(e => {
+    //   console.log(e)
+    // })
+      
+      
     } catch (error) {
       actions.setFieldError('general', error.message)
     } finally {
