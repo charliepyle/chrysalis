@@ -38,6 +38,12 @@ function createImage(root, args, context) {
     })
 }
 
+function createImageNoUser(root, args, context) {
+    return context.prisma.createImage({
+        url: args.url,
+    })
+}
+
 function deleteImage(root, args, context) {
     return context.prisma.updateUser({
         where: { id: args.userId },
@@ -54,5 +60,6 @@ module.exports = {
     updateUser,
     deleteUser,
     createImage,
+    createImageNoUser,
     deleteImage,
 }

@@ -11,8 +11,12 @@ function userImages(root, args, context) {
 }
 
 function images(root, args, context) {
-    return context.prisma.images();
+    const where = args.filter ? {
+        postedBy: null
+    } : {}
+    return context.prisma.images({where});
 }
+
 
 module.exports = {
     users,

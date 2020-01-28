@@ -1,5 +1,5 @@
 type Query {
-    images: [Image!]!
+    images(filter:String): [Image!]!
     userImages(id: ID!): [Image!]!
     users: [User!]!
     user(email: String!): User
@@ -10,6 +10,7 @@ type Mutation {
     updateUser(id: ID!, firstName: String!, lastName: String!, email: String!, password: String!): User
     deleteUser(id: ID!): User
     createImage(url: String! id: ID!): Image!
+    createImageNoUser(url: String!): Image!
     deleteImage(userId: ID!, photoId: ID!): Image!
 }
 

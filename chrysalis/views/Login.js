@@ -51,15 +51,6 @@ const Login = ({navigation}) => {
     try {
       // replace with firebase context API
       console.log('test auth: ', firebase);
-      // const {loading, error, data} = useQuery(QUERY_USER, {
-      //   variables: {
-      //         firstName: firstName,
-      //         lastName: lastName,
-      //         email: email,
-      //         password: password
-      //   }
-      // });
-      // if (data)
 
       /* the code below checks if the user exists in the MySQL instance.
       error handling isn't implemented yet but the query works for the future*/
