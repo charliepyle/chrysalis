@@ -5,9 +5,23 @@ import database from '@react-native-firebase/database';
 import { AccessToken, LoginManager } from 'react-native-fbsdk';
 import {withNavigation} from 'react-navigation'
 import {FirebaseContext} from '../utils/firebase'
+import { useMutation } from '@apollo/react-hooks';
+import gql from 'graphql-tag'
+
+const ADD_TODO = gql`
+    mutation createUserMutation($firstName: String!, $lastName: String!, $email: String!, $password: String!) {
+        createUser(firstName: $firstName, lastName: $lastName, email: $email, password: $password) {
+            id
+            firstName
+            lastName
+        }
+    }
+`;
+
 
 const FacebookLogin = ({navigation}) => {
     const firebase = useContext(FirebaseContext)
+    const [addTodo, { gqlResults }] = useMutation(ADD_TODO);
     const login = async() => {
         try {
             
@@ -31,6 +45,17 @@ const FacebookLogin = ({navigation}) => {
             
             const uid = firebase.auth().currentUser.uid;
             const email = firebase.auth().currentUser.email;
+
+            console.log('1')
+
+            console.log(addTodo({variables: {
+                firstName: "testFirstName2",
+                lastName: "testLastName2",
+                email: "testEmail2",
+                password: "testPassword2"
+            }}));
+            
+            console.log('graphql results ', gqlResults)
             const ref = database().ref(`/users/${uid}`);
             await ref.set({uid, email, name: firebase.auth().currentUser.displayName});
             console.info(JSON.stringify(firebaseUserCredential.user.toJSON()));

@@ -2,6 +2,22 @@ import React from 'react';
 import FirebaseProvider from './utils/firebase'
 import AppContainer from './navigation';
 
+// 1
+import { ApolloProvider } from 'react-apollo'
+import { ApolloClient } from 'apollo-client'
+import { createHttpLink } from 'apollo-link-http'
+import { InMemoryCache } from 'apollo-cache-inmemory'
+
+
+// 2
+const httpLink = createHttpLink({
+  uri: 'http://localhost:4000'
+})
+
+const client = new ApolloClient({
+  link: httpLink,
+  cache: new InMemoryCache()
+})
 
 
 
@@ -10,8 +26,10 @@ import AppContainer from './navigation';
 // at index.js. check there for further detail.
 export default function App() {
   return (
-    <FirebaseProvider >
-      <AppContainer />
-    </FirebaseProvider>
+    <ApolloProvider client={client}>
+      <FirebaseProvider >
+        <AppContainer />
+      </FirebaseProvider>
+    </ApolloProvider>
   );
 }
