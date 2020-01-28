@@ -1,0 +1,23 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "server for graphql application and prisma logic",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/charliepyle/chrysalis.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/charliepyle/chrysalis/issues"
+  },
+  "homepage": "https://github.com/charliepyle/chrysalis#readme",
+  "dependencies": {
+    "graphql-yoga": "^1.18.3",
+    "prisma-client-lib": "^1.34.10"
+  }
+}

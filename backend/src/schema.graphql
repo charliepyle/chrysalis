@@ -1,0 +1,28 @@
+type Query {
+    images: [Image!]!
+    userImages(id: ID!): [Image!]!
+    users: [User!]!
+}
+
+type Mutation {
+    createUser(firstName: String!, lastName: String!, email: String!, password: String!): User
+    updateUser(id: ID!, firstName: String!, lastName: String!, email: String!, password: String!): User
+    deleteUser(id: ID!): User
+    createImage(url: String! id: ID!): Image!
+    deleteImage(userId: ID!, photoId: ID!): Image!
+}
+
+type User {
+    id: ID!
+    firstName: String!
+    lastName: String!
+    email: String!
+    password: String!
+    images: [Image!]!
+}
+
+type Image {
+    id: ID!
+    url: String!
+    postedBy: User
+}
