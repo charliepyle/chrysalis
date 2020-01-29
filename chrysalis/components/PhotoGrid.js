@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 
 import {
   Dimensions,
@@ -14,6 +14,10 @@ import {FirebaseContext} from '../utils/firebase'
 import 'firebase/auth';
 import 'firebase/firestore';
 import 'firebase/storage';
+import { useMutation } from '@apollo/react-hooks';
+import {UPLOAD_IMAGE} from '../utils/mutations';
+import {QUERY_USER} from '../utils/queries';
+import { useLazyQuery } from '@apollo/react-hooks';
 
 import axios from 'axios'
 
@@ -21,9 +25,14 @@ const PhotoGrid = ({ photos, type, ...rest }) => {
 
   const firebase = useContext(FirebaseContext)
   let uid  = firebase.auth().currentUser.uid
+  const [uploadImage, { gqlResults }] = useMutation(UPLOAD_IMAGE);
 
   const windowWidth = Dimensions.get('window').width
   const IMAGES_PER_ROW = 3
+
+  let userId;
+
+  const [queryUser, { userData, loading }] = useLazyQuery(QUERY_USER)
 
   const calculatedSize = () => {
     let size = windowWidth / IMAGES_PER_ROW
@@ -45,15 +54,21 @@ const PhotoGrid = ({ photos, type, ...rest }) => {
           timestamp: new Date().getTime()
         }
 
-        firebase.firestore().collection('images').doc(`${pic_id}`).set(picData).then(res => {
-          console.log(res)
-        })
+
+        uploadImage({variables: {
+          url: `${pic_id}.jpg`,
+          id: userId,
+      }})
+        // firebase.firestore().collection('images').doc(`${pic_id}`).set(picData).then(res => {
+        //   console.log(res)
+        // })
       })
       .catch(function (error) {
         console.log(error);
       });
     }
   }
+  
 
   const renderImages = () => {
     return photos.map((image, index) => {
@@ -71,6 +86,14 @@ const PhotoGrid = ({ photos, type, ...rest }) => {
       )
     })
   }
+
+  useEffect(() => {
+    queryUser({
+      onCompleted: result => {
+        userId = result.id;
+      }
+    })
+  }, [])
 
   return (
     <ScrollView contentContainerStyle={{flexDirection:'row', flexWrap: 'wrap'}}>

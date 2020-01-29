@@ -2,7 +2,6 @@ import React, { useContext, useState, useEffect, Component } from 'react'
 import { withNavigation } from 'react-navigation'
 import {FirebaseContext} from '../utils/firebase'
 import 'firebase/auth';
-import 'firebase/firestore';
 import 'firebase/storage';
 
 

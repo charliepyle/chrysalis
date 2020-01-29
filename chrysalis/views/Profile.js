@@ -12,7 +12,7 @@ import {FirebaseContext} from '../utils/firebase'
 import 'firebase/auth';
 import 'firebase/firestore';
 import 'firebase/storage';
-import {QUERY_USER, QUERY_IMAGES} from '../utils/queries';
+import {QUERY_USER, QUERY_USER_IMAGES} from '../utils/queries';
 import { useLazyQuery } from '@apollo/react-hooks';
 
 import PhotoGrid from '../components/PhotoGrid'
@@ -21,7 +21,7 @@ const Profile = ({navigation}) => {
   const firebase = useContext(FirebaseContext)
   const [data, setData] = useState({ name: "" })
   const [pics, setPics] = useState({ urls: [] })
-  const [queryImages, { imagesLoading, imagesData }] = useLazyQuery(QUERY_IMAGES, {
+  const [queryImages, { imagesLoading, imagesData }] = useLazyQuery(QUERY_USER_IMAGES, {
     onCompleted: photoData => {
       pullName(photoData.userImages)
     }

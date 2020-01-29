@@ -22,6 +22,9 @@ import 'firebase/auth';
 import 'firebase/firestore';
 import 'firebase/storage';
 
+import {QUERY_MEME_IMAGES} from '../utils/queries';
+import { useLazyQuery } from '@apollo/react-hooks';
+
 //import { Button } from 'react-native-elements'
 import ImagePicker from 'react-native-image-picker';
 
@@ -48,6 +51,32 @@ const Home = ({navigation}) => {
   const disabledStyle = uploading ? styles.disabledBtn : {};
   const windowWidth = Dimensions.get('window').width;
   const actionBtnStyles = [styles.btn, disabledStyle];
+
+
+  const [queryImages, { memeData, loading }] = useLazyQuery(QUERY_MEME_IMAGES, {
+    variables: {filter:"hasusers"},
+      onCompleted: data => {
+        let images = data.images
+        console.log(data)
+        let file_names = []
+        images.forEach(pd => {
+          file_names.push(`swapped_images/${pd.url}`)
+        })
+        
+        let download_urls = []
+        file_names.forEach(async name => {
+          const pr = firebase.storage().ref(name)
+          
+          const url = await pr.getDownloadURL().then(url => {
+            download_urls.push(url)
+            console.log(download_urls)
+          }).catch(e => console.log(e))
+          
+          
+          setPics({ urls: download_urls })
+        })
+      }
+  })
 
   const pickImage = () => {
     ImagePicker.showImagePicker(options, response => {
@@ -114,27 +143,16 @@ const Home = ({navigation}) => {
   };
 
   useEffect(() => {
-    const pullImages = async () => {
-      const pic_ref = firebase.firestore().collection('images').orderBy("timestamp", "desc")
-      const pic_doc = pic_ref.onSnapshot(pic_doc => {
-        let file_names = []
-        pic_doc.forEach(pd => {
-          file_names.push(`swapped_images/${pd.data().filename}`)
-        })
+    // const pullImages = async () => {
+    //   const pic_ref = firebase.firestore().collection('images').orderBy("timestamp", "desc")
+    //   const pic_doc = pic_ref.onSnapshot(pic_doc => {
         
-        let download_urls = []
-        file_names.forEach(async name => {
-          const pr = firebase.storage().ref(name)
-          const url = await pr.getDownloadURL()
-          
-          download_urls.push(url)
-          console.log(download_urls)
-          setPics({ urls: download_urls })
-        })
-      })
-    }
+    //   })
+    // }
 
-    pullImages()
+    // pullImages()
+    console.log('ah!');
+    queryImages()
   }, [])
 
   return (

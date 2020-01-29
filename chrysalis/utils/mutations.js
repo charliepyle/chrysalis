@@ -10,6 +10,16 @@ const ADD_OR_UPDATE_USER = gql`
     }
 `;
 
+const UPLOAD_IMAGE = gql`
+    mutation uploadImageMutation($id: ID, $url: String!) {
+        createImage(id: $id, url: $url) {
+            id
+            url
+        }
+    }
+`;
+
 module.exports = {
-    ADD_OR_UPDATE_USER
+    ADD_OR_UPDATE_USER,
+    UPLOAD_IMAGE
 }
