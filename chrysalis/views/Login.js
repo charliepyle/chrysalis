@@ -69,14 +69,6 @@ const Login = ({navigation}) => {
           navigation.navigate('App')
         }
       
-      //console.log(data);
-    // .then(response => {
-    //   console.log(response)
-    // }).catch(e => {
-    //   console.log(e)
-    // })
-      
-      
     } catch (error) {
       actions.setFieldError('general', error.message)
     } finally {

@@ -7,7 +7,7 @@ function user(root, args, context) {
 }
 
 function userImages(root, args, context) {
-    return context.prisma.user({id: args.id}).images();
+    return context.prisma.user({id: args.userId}).images();
 }
 
 function images(root, args, context) {

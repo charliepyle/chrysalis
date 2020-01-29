@@ -10,6 +10,15 @@ const QUERY_USER = gql`
     }
 `;
 
+const QUERY_IMAGES = gql`
+    query userImages($userId: ID!) {
+        userImages(userId:$userId) {
+            url
+        }
+    }
+`;
+
 module.exports = {
-    QUERY_USER
+    QUERY_USER,
+    QUERY_IMAGES
 }

@@ -32,27 +32,33 @@ function deleteUser(root, args, context) {
 }
 
 function createImage(root, args, context) {
+    if (args.id) {
+        return context.prisma.createImage({
+            url: args.url,
+            postedBy: { connect: { id: args.id } }
+        })
+    }
     return context.prisma.createImage({
         url: args.url,
-        postedBy: { connect: { id: args.id } }
-    })
-}
-
-function createImageNoUser(root, args, context) {
-    return context.prisma.createImage({
-        url: args.url,
+        postedBy: null
     })
 }
 
 function deleteImage(root, args, context) {
-    return context.prisma.updateUser({
-        where: { id: args.userId },
-        data: {
-            images: {
-                delete: {id: args.photoId},
+    if (args.userId) {
+        return context.prisma.updateUser({
+            where: { id: args.userId },
+            data: {
+                images: {
+                    delete: {id: args.photoId},
+                }
             }
-        }
+        })
+    }
+    return context.prisma.deleteImage({
+        id: args.photoId
     })
+    
 }
 
 module.exports = {
@@ -60,6 +66,5 @@ module.exports = {
     updateUser,
     deleteUser,
     createImage,
-    createImageNoUser,
     deleteImage,
 }
