@@ -4,6 +4,7 @@ const ADD_OR_UPDATE_USER = gql`
     mutation createUserMutation($firstName: String!, $lastName: String!, $email: String!, $password: String!) {
         createUser(firstName: $firstName, lastName: $lastName, email: $email, password: $password) {
             id
+            email
             firstName
             lastName
         }

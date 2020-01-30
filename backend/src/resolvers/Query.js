@@ -3,6 +3,9 @@ function users(root, args, context) {
 }
 
 function user(root, args, context) {
+    if (args.id) {
+        return context.prisma.user({id: args.id})
+    }
     return context.prisma.user({email: args.email})
 }
 

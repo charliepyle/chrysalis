@@ -12,6 +12,7 @@ import 'firebase/firestore';
 import {withNavigation} from 'react-navigation'
 import { useMutation } from '@apollo/react-hooks';
 import {ADD_OR_UPDATE_USER} from '../utils/mutations';
+import { useApolloClient } from "@apollo/react-hooks";
 import 'firebase/auth';
 
 
@@ -48,7 +49,20 @@ const Signup = ({navigation}) => {
   const [passwordIcon, setPasswordIcon] = useState('ios-eye');
   const [confirmPasswordIcon, setConfirmPasswordIcon] = useState('ios-eye');
   const firebase = useContext(FirebaseContext);
-  const [addUser, { gqlResults }] = useMutation(ADD_OR_UPDATE_USER);
+  const [addUser, { gqlResults }] = useMutation(ADD_OR_UPDATE_USER, {
+    update(cache, {data: {createUser}}) {
+      console.log('mutation completed data: ', data);
+      const currentUser = {
+          id: createUser.id,
+          email: createUser.email,
+          firstName: createUser.firstName,
+          lastName: createUser.lastName,
+      };
+      cache.writeData({ data: {currentUser}});
+      // const client = useApolloClient();
+      // client.writeData({data: { currentUser: cachedUser }})
+    }
+  });
 
 
   // handler functions below

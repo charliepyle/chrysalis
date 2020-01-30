@@ -7,6 +7,7 @@ import {withNavigation} from 'react-navigation'
 import {ADD_OR_UPDATE_USER} from '../utils/mutations';
 import {FirebaseContext} from '../utils/firebase'
 import { useMutation } from '@apollo/react-hooks';
+import { useApolloClient } from "@apollo/react-hooks";
 
 
 
@@ -14,7 +15,20 @@ import { useMutation } from '@apollo/react-hooks';
 // Calling this function will open Google for login.
 const GoogleLogin = ({navigation}) => {
   const firebase = useContext(FirebaseContext)
-  const [addUser, { gqlResults }] = useMutation(ADD_OR_UPDATE_USER);
+  const [addUser, { gqlResults }] = useMutation(ADD_OR_UPDATE_USER, {
+    update(cache, {data: {createUser}}) {
+      //console.log('mutation completed data: ', data);
+      const currentUser = {
+          id: createUser.id,
+          email: createUser.email,
+          firstName: createUser.firstName,
+          lastName: createUser.lastName,
+      };
+      cache.writeData({ data: {currentUser}});
+      // const client = useApolloClient();
+      // client.writeData({data: { currentUser: cachedUser }})
+    }
+  });
   const login = async() => {
     try {
       // Add any configuration settings here:
@@ -67,14 +81,6 @@ const GoogleLogin = ({navigation}) => {
         color={GoogleSigninButton.Color.Light}
         onPress={() => { console.log(login()) }}
       />
-      {/* <Button title="Sign in with Google" 
-      titleStyle={{color: '#F57C00'}}
-      type='clear'
-      onPress={() => {
-        console.log(login());
-      }}>
-        
-      </Button> */}
     </View>
   );   
 }

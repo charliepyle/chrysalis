@@ -2,7 +2,7 @@ type Query {
     images(filter:String): [Image!]!
     userImages(userId: ID!): [Image!]!
     users: [User!]!
-    user(email: String!): User
+    user(id: ID, email: String): User
 }
 
 type Mutation {

@@ -12,31 +12,58 @@ import {FirebaseContext} from '../utils/firebase'
 import 'firebase/auth';
 import 'firebase/firestore';
 import 'firebase/storage';
-import {QUERY_USER, QUERY_USER_IMAGES} from '../utils/queries';
+import {QUERY_USER, QUERY_USER_IMAGES, QUERY_CACHED_USER} from '../utils/queries';
 import { useLazyQuery } from '@apollo/react-hooks';
-
+import {Subscription} from 'react-apollo'
 import PhotoGrid from '../components/PhotoGrid'
+import { useApolloClient, useQuery } from "@apollo/react-hooks";
+import gql from 'graphql-tag'
 
 const Profile = ({navigation}) => {
   const firebase = useContext(FirebaseContext)
-  const [data, setData] = useState({ name: "" })
+  const [nameData, setData] = useState({ name: "" })
   const [pics, setPics] = useState({ urls: [] })
+  const client = useApolloClient();
+  let user = {
+    id: "",
+    email: "",
+    firstName: "hello",
+    lastName: "world",
+  };
+  
+  // const [localUserData, {localUserDataResults, userLoading}] = useLazyQuery(QUERY_CACHED_USER, {
+  //   onCompleted: results => {
+  //     console.log(results);
+  //   }
+  // })
+
+  const [queryUser, { userData, loading }] = useLazyQuery(QUERY_USER, {
+    variables: {email: firebase.auth().currentUser.email},
+    onCompleted: userQuery => {
+      userId = userQuery.user.id
+      queryImages({
+        variables: { userId: userQuery.user.id }
+      })
+    }
+  });
   const [queryImages, { imagesLoading, imagesData }] = useLazyQuery(QUERY_USER_IMAGES, {
     onCompleted: photoData => {
       pullName(photoData.userImages)
     }
   });
-  const [queryUser, { userData, loading }] = useLazyQuery(QUERY_USER, {
-    variables: {email: firebase.auth().currentUser.email},
-    onCompleted: data => {
-      queryImages({
-        variables: { userId: data.user.id }
-      })
-    }
-  });
+  
 
   useEffect(() => {
+    //localUserData()
+    
+    const { currentUser } = client.readQuery({
+      query: QUERY_CACHED_USER
+    });
+    setData(user.firstName + " " + user.lastName)
+    user = currentUser;
+    console.log(user);
     queryUser()
+    //console.log('current user from cache: ', currentUser);
   }, [])
 
   const pullName = async (photoLinks) => {
@@ -59,6 +86,7 @@ const Profile = ({navigation}) => {
   const handleSignout = async () => {
     try {
       await firebase.auth().signOut()
+      client.resetStore();
       navigation.navigate('Auth')
     } catch (error) {
       console.log(error)
@@ -66,26 +94,34 @@ const Profile = ({navigation}) => {
   }
 
     return (
-      <View style={styles.container}>
-          <View style={styles.header}></View>
-          <Image style={styles.avatar} source={{uri: 'https://bootdey.com/img/Content/avatar/avatar6.png'}}/>
-          <View style={styles.body}>
-            <View style={styles.bodyContent}>
-              <Text style={styles.name}>{data.name}</Text>
-              <Text style={styles.info}>UX Designer / Mobile developer</Text>
-              <Text style={styles.description}>Lorem ipsum dolor sit amet, saepe sapientem eu nam. Qui ne assum electram expetendis, omittam deseruisse consequuntur ius an,</Text>
-            </View>
+      
+        <View style={styles.container}>
+          <Subscription subscription={QUERY_USER} variables={{id: "34567"}} onSubscriptionData={opts => {
+        console.log(opts.subscriptionData)
+        setPics([...pics, opts.subscriptionData])
+      }
+        }/>
+            <View style={styles.header}></View>
+            <Image style={styles.avatar} source={{uri: 'https://bootdey.com/img/Content/avatar/avatar6.png'}}/>
+            <View style={styles.body}>
+              <View style={styles.bodyContent}>
+                <Text style={styles.name}>{nameData.name}</Text>
+                <Text style={styles.info}>UX Designer / Mobile developer</Text>
+                <Text style={styles.description}>Lorem ipsum dolor sit amet, saepe sapientem eu nam. Qui ne assum electram expetendis, omittam deseruisse consequuntur ius an,</Text>
+              </View>
+          </View>
+          <Button
+            title='Sign Out'
+            onPress={handleSignout}
+            titleStyle={{
+              color: '#F57C00'
+            }}
+            type='clear'
+          />
+          <PhotoGrid photos={pics.urls} />
         </View>
-        <Button
-          title='Sign Out'
-          onPress={handleSignout}
-          titleStyle={{
-            color: '#F57C00'
-          }}
-          type='clear'
-        />
-        <PhotoGrid photos={pics.urls} />
-      </View>
+      
+      // </Subscription>
   );
 
 }

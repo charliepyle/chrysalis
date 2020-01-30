@@ -1,5 +1,5 @@
 import React, { Component, Fragment, useContext, useState } from 'react'
-import { StyleSheet, SafeAreaView, View, Text, TouchableOpacity } from 'react-native'
+import { StyleSheet, SafeAreaView, View, Text,TouchableOpacity } from 'react-native'
 import { Button } from 'react-native-elements'
 import { Ionicons } from 'react-native-ionicons'
 import { Formik } from 'formik'
@@ -16,6 +16,7 @@ import {withNavigation} from 'react-navigation'
 import FacebookLogin from '../components/FacebookLogin'
 import {QUERY_USER} from '../utils/queries';
 import { useLazyQuery } from '@apollo/react-hooks';
+import { useApolloClient } from "@apollo/react-hooks";
 
 const validationSchema = Yup.object().shape({
   email: Yup.string()
@@ -32,9 +33,19 @@ const Login = ({navigation}) => {
   const [passwordVisibility, setVisibility] = useState(true);
   const [rightIcon, setRightIcon] = useState('ios-eye');
   const firebase = useContext(FirebaseContext);
-  const [queryUser, { loading, data }] = useLazyQuery(QUERY_USER);
-  // const { authnavigation } = useContext(AuthNavigation);
-  // const { globalnavigation } = useContext(GlobalNavigation);
+  const [queryUser, { loading, data }] = useLazyQuery(QUERY_USER, {
+    onCompleted: data => {
+      const cachedUser = {
+        id: data.user.id,
+        email: data.user.email,
+        firstName: data.user.firstName,
+        lastName: data.user.lastName,
+      };
+      const client = useApolloClient();
+      client.writeData({data: { currentUser: cachedUser }})
+
+    }
+  });
 
   // replace with navigation context API for consuming
   const goToSignup = () => navigation.navigate('Signup')
@@ -52,20 +63,23 @@ const Login = ({navigation}) => {
       // replace with firebase context API
       console.log('test auth: ', firebase);
 
-      /* the code below checks if the user exists in the MySQL instance.
-      error handling isn't implemented yet but the query works for the future*/
-      queryUser({variables: {
-        email: email,
-      }});
-      if (data) {
-        console.log(data);
-
-      } 
+     
 
       const response = await firebase.auth().signInWithEmailAndPassword(email, password);
 
+
+
         if (response.user) {
-          // replace with global navigation (from auth to app)
+          
+          /* the code below queries the user from the SQL instance and
+          stores that ID in the cache of the app.*/
+          queryUser({
+            variables: {
+              email: email,
+            },
+          });
+          
+          
           navigation.navigate('App')
         }
       
@@ -77,118 +91,87 @@ const Login = ({navigation}) => {
   }
   
   return (
-    <SafeAreaView style={styles.container}>
-      <HideWithKeyboard style={styles.logoContainer}>
-        <AppLogo />
-      </HideWithKeyboard>
-      <Formik
-        initialValues={{ email: '', password: '' }}
-        onSubmit={(values, actions) => {
-          handleOnLogin(values, actions)
-        }}
-        validationSchema={validationSchema}>
-        {({
-          handleChange,
-          values,
-          handleSubmit,
-          errors,
-          isValid,
-          touched,
-          handleBlur,
-          isSubmitting
-        }) => (
-          <Fragment>
-            <FormInput
-              name='email'
-              value={values.email}
-              onChangeText={handleChange('email')}
-              placeholder='Enter email'
-              autoCapitalize='none'
-              iconName='ios-mail'
-              iconColor='#2C384A'
-              onBlur={handleBlur('email')}
-            />
-            <ErrorMessage errorValue={touched.email && errors.email} />
-            <FormInput
-              name='password'
-              value={values.password}
-              onChangeText={handleChange('password')}
-              placeholder='Enter password'
-              secureTextEntry={passwordVisibility}
-              iconName='ios-lock'
-              iconColor='#2C384A'
-              onBlur={handleBlur('password')}
-              rightIcon={
-                <TouchableOpacity onPress={handlePasswordVisibility}>
-                 {/* <Ionicons name={rightIcon} size={28} color='grey' /> */}
-                </TouchableOpacity>
-              }
-            />
-            <ErrorMessage errorValue={touched.password && errors.password} />
-            <View style={styles.buttonContainer}>
-              <FormButton
-                buttonType='outline'
-                onPress={handleSubmit}
-                title='LOGIN'
-                buttonColor='#039BE5'
-                disabled={!isValid || isSubmitting}
-                loading={isSubmitting}
-              />
-            </View>
-            <ErrorMessage errorValue={errors.general} />
-          </Fragment>
-        )}
-      </Formik>
-      {/* <TouchableOpacity 
-        style={styles.googlebtn}
-        onPress={GoogleLogin}>
-          <View>
-            <Text style={styles.btnTxt}>Sign in with Google</Text>
-          </View>
-      </TouchableOpacity> */}
-      
-      <Button
-        title="Don't have an account? Sign Up"
-        onPress={goToSignup}
-        titleStyle={{
-          color: '#F57C00'
-        }}
-        type='clear'
-      />
-      {/* need to restyle this with the sign in with google
-      https://developers.google.com/identity/branding-guidelines
-       */}
-      <GoogleLogin/>
-      <FacebookLogin/>
-      {/* <Button
-        title="Sign in with Google"
-        onPress={() => {
-          GoogleLogin(navigation);
-
-        }
-      }
-        titleStyle={{
-          color: '#F57C00'
-        }}
-        type='clear'
-      /> */}
-      
-      {/* <Button
-        title="Sign in with Facebook"
-        onPress={() => {
-          console.log("pressed facebook button");
-          FacebookLogin();
-          
-
-        }
-      }
-        titleStyle={{
-          color: '#F57C00'
-        }}
-        type='clear'
-      /> */}
-      
-    </SafeAreaView>
+    // <ApolloConsumer> {client => (
+      <SafeAreaView style={styles.container}>
+        <HideWithKeyboard style={styles.logoContainer}>
+          <AppLogo />
+        </HideWithKeyboard>
+          <Formik
+            initialValues={{ email: '', password: '' }}
+            onSubmit={(values, actions) => {
+              handleOnLogin(values, actions)
+            }}
+            validationSchema={validationSchema}>
+            {({
+              handleChange,
+              values,
+              handleSubmit,
+              errors,
+              isValid,
+              touched,
+              handleBlur,
+              isSubmitting
+            }) => (
+              <Fragment>
+                
+                <FormInput
+                  name='email'
+                  value={values.email}
+                  onChangeText={handleChange('email')}
+                  placeholder='Enter email'
+                  autoCapitalize='none'
+                  iconName='ios-mail'
+                  iconColor='#2C384A'
+                  onBlur={handleBlur('email')}
+                />
+                <ErrorMessage errorValue={touched.email && errors.email} />
+                <FormInput
+                  name='password'
+                  value={values.password}
+                  onChangeText={handleChange('password')}
+                  placeholder='Enter password'
+                  secureTextEntry={passwordVisibility}
+                  iconName='ios-lock'
+                  iconColor='#2C384A'
+                  onBlur={handleBlur('password')}
+                  rightIcon={
+                    <TouchableOpacity onPress={handlePasswordVisibility}>
+                    {/* <Ionicons name={rightIcon} size={28} color='grey' /> */}
+                    </TouchableOpacity>
+                  }
+                />
+                <ErrorMessage errorValue={touched.password && errors.password} />
+                <View style={styles.buttonContainer}>
+                  <FormButton
+                    buttonType='outline'
+                    onPress={handleSubmit}
+                    title='LOGIN'
+                    buttonColor='#039BE5'
+                    disabled={!isValid || isSubmitting}
+                    loading={isSubmitting}
+                  />
+                </View>
+                <ErrorMessage errorValue={errors.general} />
+              </Fragment>
+            )}
+          </Formik>
+        
+        <Button
+          title="Don't have an account? Sign Up"
+          onPress={goToSignup}
+          titleStyle={{
+            color: '#F57C00'
+          }}
+          type='clear'
+        />
+        {/* need to restyle this with the sign in with google
+        https://developers.google.com/identity/branding-guidelines
+        */}
+        <GoogleLogin/>
+        <FacebookLogin/>
+        
+      </SafeAreaView>
+// )}</ApolloConsumer>
   );
 }
 

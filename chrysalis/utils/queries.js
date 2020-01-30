@@ -34,9 +34,21 @@ const QUERY_MEME_IMAGES = gql`
     }
 `;
 
+const QUERY_CACHED_USER = gql`
+  {
+    currentUser @client {
+      id
+      email
+      firstName
+      lastName
+    }
+  }
+`;
+
 module.exports = {
     QUERY_USER,
     QUERY_USER_IMAGES,
     QUERY_IMAGES,
     QUERY_MEME_IMAGES,
+    QUERY_CACHED_USER
 }
