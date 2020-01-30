@@ -13,6 +13,10 @@ type Mutation {
     deleteImage(userId: ID, photoId: ID!): Image!
 }
 
+type Subscription {
+    newImage(userId: ID): Image
+}
+
 type User {
     id: ID!
     firstName: String!
